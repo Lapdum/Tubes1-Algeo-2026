@@ -2,6 +2,8 @@ package algeo.modules;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SPL {
     public static void main(String[] args) {
@@ -10,7 +12,7 @@ public class SPL {
 
     static Scanner sc = new Scanner(System.in);
     static int r, c = 0;
-    static double[][] matrix;
+    static double[][] matrix = new double[11][12];
 
     static void start() {
         System.out.println("Pilih metode input matriks augmented:");
@@ -36,6 +38,8 @@ public class SPL {
                 sc.next();
             }
         }
+
+        sc.nextLine();
 
         if (inputMethod == 1) {
             manual();
@@ -63,10 +67,57 @@ public class SPL {
 
         System.out.println("Input matriks augmented:\n");
 
+        boolean inputArray = true;
+
+        while (inputArray) {
+            String row = sc.nextLine();
+            if (row.equals("DONE")) {
+                inputArray = false;
+            } else {
+                row = row.replace(',', '.');
+                String[] token = row.split(" ");
+                extractNumber(token);
+            }
+        }
+
+        System.out.println(r + " " + c + "\n\n\n");
+
+        /*
+         * for (int i = 0; i < r; i++) {
+         * for (int j = 0; j < c; j++) {
+         * System.out.printf(matrix[i][j] + " ");
+         * }
+         * System.out.println();
+         * }
+         */
+        printSPL();
+
     }
 
     static void fileInput() {
         System.out.println("Silahkan masukkan nama file SPL:");
+    }
+
+    static void extractNumber(String[] token) {
+        /*
+         * Pattern p = Pattern.compile("(-)?(([//d])(0)|[1-9][0-9]*)(\\.)?([0-9]+)");
+         * Matcher m = p.matcher(S);
+         * 
+         * while (m.find()) {
+         * System.out.println("[" + S + "]");
+         * System.out.println(r + " " + c + "\n\n\n");
+         * 
+         * matrix[r][c] = Double.parseDouble(m.group());
+         * c += 1;
+         * }
+         * r += 1;
+         */
+
+        for (int i = 0; i < token.length; i++) {
+            matrix[r][i] = Double.parseDouble(token[i].trim());
+        }
+        c = token.length;
+        r += 1;
     }
 
     static void printSPL() {
