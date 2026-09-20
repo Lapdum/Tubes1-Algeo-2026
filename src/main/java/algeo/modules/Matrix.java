@@ -1,10 +1,29 @@
 package algeo.modules;
 
-import java.util.Arrays; //JANGAN LUPA DIHAPUS ---- HANYA UNTUK TESTING, GACOR
-
 public class Matrix {
-    public void outputMatrix() {
-        int[][] matrixDuaDua = { {1, 1}, {1, 1} };
-        System.out.println(Arrays.deepToString(matrixDuaDua));
+    private int rows;
+    private int cols;
+    private double[][] data; //untuk menyimpan input dr user
+
+    public Matrix(int rows, int cols){
+        this.rows = rows;
+        this.cols = cols; //this itu artiny objek yg lagi dipake/dimiliki oleh konstruktor (public matrix)
+        this.data = new double[rows][cols];
+        
+    }
+    public int getRows(){
+        return rows;
+    }
+
+    public int getCols(){
+        return cols;
+    }
+
+    public double getValue(int row, int col){
+        return data[row][col];
+    }
+
+    public void set(int row, int col, double value){
+        data[row][col] = value;
     }
 }
