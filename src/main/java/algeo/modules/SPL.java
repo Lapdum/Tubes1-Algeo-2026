@@ -12,7 +12,7 @@ public class SPL {
 
     static Scanner sc = new Scanner(System.in);
     static int r, c = 0;
-    static double[][] matrix = new double[11][12];
+    static double[][] matrix = new double[1001][1002];
 
     static void start() {
         System.out.println("Pilih metode input matriks augmented:");
@@ -56,12 +56,12 @@ public class SPL {
 
         System.out.println("Silahkan masukkan sistem persamaan linear anda dalam bentuk matriks augmented.");
         System.out.println("Ukuran maksimal matriks augmented adalah 11*12, termasuk hasil baris.");
-        System.out.println("Apabila sudah selesai, silahkan ketik selain 'DONE' setelah baris terakhir.\n");
+        System.out.println("Apabila sudah selesai, silahkan tekan 'ENTER' pada baris kosong.\n");
         System.out.println("Contoh input matriks augmented:");
         System.out.println("1 2 3 4");
         System.out.println("5 6 7 8");
         System.out.println("9 10 11 12");
-        System.out.println("DONE\n");
+        System.out.println();
         System.out.println("(Hasil input adalah matriks augmented berukuran 3*4)");
         System.out.println();
 
@@ -71,7 +71,7 @@ public class SPL {
 
         while (inputArray) {
             String row = sc.nextLine();
-            if (row.equals("DONE")) {
+            if (row.length() == 0) {
                 inputArray = false;
             } else {
                 row = row.replace(',', '.');
@@ -80,7 +80,7 @@ public class SPL {
             }
         }
 
-        System.out.println(r + " " + c + "\n\n\n");
+        //System.out.println(r + " " + c + "\n\n\n");
 
         /*
          * for (int i = 0; i < r; i++) {
