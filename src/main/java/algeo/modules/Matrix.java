@@ -7,7 +7,7 @@ public class Matrix {
     private int cols;
     private double[][] data; // untuk menyimpan input dr user
 
-    private Scanner sc = new Scanner(System.in);
+    private static Scanner sc = new Scanner(System.in);
 
     public Matrix(int rows, int cols) {
         this.rows = rows;
@@ -17,12 +17,13 @@ public class Matrix {
 
     }
 
-    public static Matrix inputMatrix(String row) {
+    public static Matrix inputMatrix() {
         double[][] m = new double[12][13];
         int r = 0;
         int c = 0;
         boolean inputArray = true;
         while (inputArray) {
+            String row = sc.nextLine();
             if (row.length() == 0 || r == 11) {
                 inputArray = false;
             } else {
@@ -34,7 +35,7 @@ public class Matrix {
                 r += 1;
                 if (c == 0) {
                     c = token.length;
-                } else {
+                } else if (token.length != c) {
                     System.out.println("Belum aku bikin try catchnya");
                 }
             }
