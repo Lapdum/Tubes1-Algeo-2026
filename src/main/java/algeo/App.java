@@ -1,12 +1,17 @@
 package algeo;
 
+import java.util.Arrays;
+
 import algeo.modules.ModuleContoh;
+import algeo.modules.ModuleDeterminan;
 
 public class App {
     public static void main(String[] args) {
         ModuleContoh module = new ModuleContoh();
         module.jalankan();
-    }
+        ModuleDeterminan moduleD = new ModuleDeterminan();
+        moduleD.jalanAres();
+    }    
 }
 
 // Contoh entry point JavaFX
