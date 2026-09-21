@@ -9,8 +9,8 @@ public class Matrix {
         this.rows = rows;
         this.cols = cols; //this itu artiny objek yg lagi dipake/dimiliki oleh konstruktor (public matrix)
         this.data = new double[rows][cols];
-        
     }
+
     public int getRows(){
         return rows;
     }

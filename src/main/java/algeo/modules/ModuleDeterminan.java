@@ -2,7 +2,11 @@ package algeo.modules;
 
 import java.util.Arrays;
 
+import algeo.modules.Matrix;
+
 public class ModuleDeterminan {
+    Matrix mtrx = new Matrix();
+
     public void jalanAres() {
         //System.out.println(Arrays.deepToString(testMatrix));
         System.out.println(Arrays.deepToString(subMatrix(i, j, m, n, testMatrix)));
@@ -29,7 +33,11 @@ public class ModuleDeterminan {
 
     static int minor(int i, int j, int m, int n, int[][] testMatrix) { 
         subMatrix(i, j, m, n, testMatrix);
-        return ekspansiKofaktorBaris();
+        if (m > 2) {
+            return ekspansiKofaktorBaris();
+        } else {
+            return localDeterminan2x2();
+        }
     }
 
     int i = 0;
@@ -49,17 +57,19 @@ public class ModuleDeterminan {
         return subM;
     }
 
-    static int localDeterminan(int[][] testMatrix) {
-        int det;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                det += testMatrix[i][j];
-            }
-        }
-        return det;
-    }
-
     static int localDeterminan2x2(int[][] testMatrix) {
         return testMatrix[0][0]*testMatrix[1][1] - testMatrix[0][1]*testMatrix[1][0];
     }
+
+    public boolean isSingular(int[][] Matrix) {
+        if (ekspansiKofaktorBaris() == 0) {return true; }
+        else { return false; }
+    }
+
+    public double reduksiBaris(int[][] Matrix, int countSwitch){
+        int valueDiagonal = 
+        
+        return (-1)^countSwitch*valueDiagonal;
+    }
 }
+    
