@@ -80,7 +80,7 @@ public class Matrix {
 
     // Operasi Baris Elementer
 
-    public Matrix partialPivoting(Matrix m, int c) {
+    public static Matrix partialPivoting(Matrix m, int c) {
         double mx = 0;
         int pos = 0;
         for (int i = 0; i < m.getRows(); i++) {
@@ -102,7 +102,7 @@ public class Matrix {
         return m;
     }
 
-    public Matrix multiplyRow(Matrix m, int r, double multiplier) {
+    public static Matrix multiplyRow(Matrix m, int r, double multiplier) {
         for (int i = 0; i < m.getCols(); i++) {
             double replace = multiplier * m.getValue(r, i);
             m.set(r, i, replace);
@@ -111,7 +111,7 @@ public class Matrix {
         return m;
     }
 
-    public Matrix addRowbyRow(Matrix m, int r1, int r2) { // r1 target
+    public static Matrix addRowbyRow(Matrix m, int r1, int r2, double multiplier) { // r1 target
         for (int i = 0; i < m.getCols(); i++) {
             double m1 = m.getValue(r1, i);
             double m2 = m.getValue(r2, i);
@@ -122,7 +122,7 @@ public class Matrix {
         return m;
     }
 
-    public Matrix subtractRowbyRow(Matrix m, int r1, int r2) { // r1 target
+    public static Matrix subtractRowbyRow(Matrix m, int r1, int r2, double multiplier) { // r1 target
         for (int i = 0; i < m.getCols(); i++) {
             double m1 = m.getValue(r1, i);
             double m2 = m.getValue(r2, i);
