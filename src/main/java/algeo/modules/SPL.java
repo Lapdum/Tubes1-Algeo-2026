@@ -10,11 +10,9 @@ public class SPL {
         start();
     }
 
-    static Scanner sc = new Scanner(System.in);
-    static int r, c = 0;
-    static double[][] matrix = new double[1001][1002];
+    private static Scanner sc = new Scanner(System.in);
 
-    static void start() {
+    private static void start() {
         System.out.println("Pilih metode input matriks augmented:");
         System.out.println("1. Input manual");
         System.out.println("2. Input file");
@@ -48,7 +46,7 @@ public class SPL {
         }
     }
 
-    static void manual() {
+    private static void manual() {
         System.out.println("---------------------------------");
         System.out.println("|     Sistem Persamaan Linear    |");
         System.out.println("---------------------------------");
@@ -67,66 +65,26 @@ public class SPL {
 
         System.out.println("Input matriks augmented:\n");
 
-        boolean inputArray = true;
+        Matrix m = Matrix.inputMatrix();
 
-        while (inputArray) {
-            String row = sc.nextLine();
-            if (row.length() == 0) {
-                inputArray = false;
-            } else {
-                row = row.replace(',', '.');
-                String[] token = row.split(" ");
-                extractNumber(token);
-            }
-        }
-
-        //System.out.println(r + " " + c + "\n\n\n");
-
-        /*
-         * for (int i = 0; i < r; i++) {
-         * for (int j = 0; j < c; j++) {
-         * System.out.printf(matrix[i][j] + " ");
-         * }
-         * System.out.println();
-         * }
-         */
-        printSPL();
+        printSPL(m);
 
     }
 
-    static void fileInput() {
+    private static void fileInput() {
         System.out.println("Silahkan masukkan nama file SPL:");
     }
 
-    static void extractNumber(String[] token) {
-        /*
-         * Pattern p = Pattern.compile("(-)?(([//d])(0)|[1-9][0-9]*)(\\.)?([0-9]+)");
-         * Matcher m = p.matcher(S);
-         * 
-         * while (m.find()) {
-         * System.out.println("[" + S + "]");
-         * System.out.println(r + " " + c + "\n\n\n");
-         * 
-         * matrix[r][c] = Double.parseDouble(m.group());
-         * c += 1;
-         * }
-         * r += 1;
-         */
+    private static void printSPL(Matrix matrix) {
+        int r = matrix.getRows();
+        int c = matrix.getCols();
 
-        for (int i = 0; i < token.length; i++) {
-            matrix[r][i] = Double.parseDouble(token[i].trim());
-        }
-        c = token.length;
-        r += 1;
-    }
-
-    static void printSPL() {
         System.out.println("Hasil SPL dari input:");
 
         /* X1 + 2X2 + 3X3 = 4 */
         for (int i = 0; i < r; i++) {
             for (int j = 0; j < c; j++) {
-                double num = matrix[i][j];
+                double num = matrix.getValue(i, j);
                 if (j != c - 1) {
                     if (j != 0) {
                         if (num > 0) {
