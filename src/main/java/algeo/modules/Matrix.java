@@ -3,9 +3,9 @@ package algeo.modules;
 import java.util.Scanner;
 
 public class Matrix {
-    private int rows;
-    private int cols;
-    private double[][] data; // untuk menyimpan input dr user
+    int rows;
+    int cols;
+    double[][] data; // untuk menyimpan input dr user
 
     private static Scanner sc = new Scanner(System.in);
 
