@@ -16,7 +16,7 @@ public class ModuleDeterminan {
     }
 
     public double cofaktor(int i, int j, Matrix matrix) { //cofaktor (Cij)
-        return Math.pow(-1, i+j)*minor(i, j, matrix);
+        return Math.pow(-1, i+j+2)*minor(i, j, matrix);
     }
 
     public double minor(int i, int j, Matrix matrix) { //minor (Mij)
@@ -24,7 +24,10 @@ public class ModuleDeterminan {
         if (matrix.cols > 2) {
             return ekspansiKofaktorBaris(1, matrix);
         } else {
-            return localDeterminan2x2(matrix);
+            if (i == 0 && j == 0) { return matrix.data[1][1]; }
+            elif (i == 0 && j == 1) { return matrix.data[1][0]; }
+            elif ( i == 1 && j == 0) { return matrix.data[0][1]; }
+            elif ( i == 1 && j == 1) { return matrix.data[0][0]; }       
         }
     }
 
@@ -42,9 +45,9 @@ public class ModuleDeterminan {
         return subM;
     }
 
-    static double localDeterminan2x2(Matrix matrix) {
-        return matrix.data[0][0]*matrix.data[1][1] - matrix.data[0][1]*matrix.data[1][0];
-    }
+    // static double localDeterminan2x2(Matrix matrix) {
+        // return (matrix.data[0][0]*matrix.data[1][1]) - (matrix.data[0][1]*matrix.data[1][0]);
+    // }
 
     public boolean isSingular(Matrix matrix) {
         if (ekspansiKofaktorBaris(1, matrix) == 0) {return true; }
