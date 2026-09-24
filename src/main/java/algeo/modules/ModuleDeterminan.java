@@ -27,7 +27,7 @@ public class ModuleDeterminan {
             if (i == 0 && j == 0) { return matrix.data[1][1]; }
             else if (i == 0 && j == 1) { return matrix.data[1][0]; }
             else if ( i == 1 && j == 0) { return matrix.data[0][1]; }
-            else if ( i == 1 && j == 1) { return matrix.data[0][0]; }       
+            else ( i == 1 && j == 1) { return matrix.data[0][0]; }       
         }
     }
 
