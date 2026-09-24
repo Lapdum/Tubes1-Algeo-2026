@@ -25,9 +25,9 @@ public class ModuleDeterminan {
             return ekspansiKofaktorBaris(1, matrix);
         } else {
             if (i == 0 && j == 0) { return matrix.data[1][1]; }
-            elif (i == 0 && j == 1) { return matrix.data[1][0]; }
-            elif ( i == 1 && j == 0) { return matrix.data[0][1]; }
-            elif ( i == 1 && j == 1) { return matrix.data[0][0]; }       
+            else if (i == 0 && j == 1) { return matrix.data[1][0]; }
+            else if ( i == 1 && j == 0) { return matrix.data[0][1]; }
+            else if ( i == 1 && j == 1) { return matrix.data[0][0]; }       
         }
     }
 
