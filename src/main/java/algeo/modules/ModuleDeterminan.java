@@ -8,7 +8,6 @@ public class ModuleDeterminan {
     public static void jalanAres() {
         Matrix test = new Matrix(4, 4);
         test.data = new double[][] {{1, 2, 3, 10}, {4, 5, 6, 11}, {7, 8, 9, 12}, {13, 14, 15, 16}};
-        Matrix result = subMatrix(1, 1, test);
         double det = ekspansiKofaktorBaris(1, test);
         System.out.println(det);
         //System.out.println(Arrays.deepToString(result.data));
@@ -35,10 +34,11 @@ public class ModuleDeterminan {
         if (subM.cols > 2) {
             return ekspansiKofaktorBaris(1, subM);
         } else {
-            if (i == 0 && j == 0) { return subM.data[1][1]; }
-            else if (i == 0 && j == 1) { return subM.data[1][0]; }
-            else if ( i == 1 && j == 0) { return subM.data[0][1]; }
-            else { return subM.data[0][0]; }       
+            return localDeterminan2x2(subM);
+            //if (i == 0 && j == 0) { return subM.data[1][1]; }
+            //else if (i == 0 && j == 1) { return subM.data[1][0]; }
+            //else if ( i == 1 && j == 0) { return subM.data[0][1]; }
+            //else { return subM.data[0][0]; }       
         }
     }
 
@@ -67,9 +67,9 @@ public class ModuleDeterminan {
         return subM;
     }
 
-    // static double localDeterminan2x2(Matrix matrix) {
-        // return (matrix.data[0][0]*matrix.data[1][1]) - (matrix.data[0][1]*matrix.data[1][0]);
-    // }
+    static double localDeterminan2x2(Matrix matrix) {
+        return (matrix.data[0][0]*matrix.data[1][1]) - (matrix.data[0][1]*matrix.data[1][0]);
+    }
 
     public static boolean isSingular(Matrix matrix) {
         if (ekspansiKofaktorBaris(1, matrix) == 0) {return true; }
