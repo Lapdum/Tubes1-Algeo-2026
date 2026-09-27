@@ -1,19 +1,29 @@
 package algeo.modules;
 
-import java.util.Arrays;
 import algeo.modules.Matrix;
 
 public class ModuleDeterminan {
 
     public static void jalanAres() {
-        Matrix test = new Matrix(4, 4);
-        test.data = new double[][] {{1, 2, 3, 10}, {4, 5, 6, 11}, {7, 8, 9, 12}, {13, 14, 15, 16}};
-        double det = ekspansiKofaktorBaris(1, test);
-        System.out.println(det);
-        //System.out.println(Arrays.deepToString(result.data));
+        //Matrix test = new Matrix(4, 4);
+        //test.data = new double[][] {{1, 8, 3, 10}, {4, 111, 6, 11}, {7, 8, 9, 12}, {13, 14, 15, 16}};
+        //double det = ekspansiKofaktorKolom(1, test);
+        //System.out.println(det);
         }
 
-    public static Double ekspansiKofaktorBaris(int x, Matrix matrix) { //baris ke-n
+    public static Double ekspansiKofaktorKolom(int x, Matrix matrix)  { //kolom ke-x
+        if (matrix.rows != matrix.cols) {return null;}
+        else {
+            x = x - 1;
+            double det = 0;
+            for (int c = 0; c < matrix.rows; c++) {
+                det += matrix.data[c][x]*cofaktor(c, x, matrix);
+            }
+            return det;
+        }
+    }
+
+    public static Double ekspansiKofaktorBaris(int x, Matrix matrix) { //baris ke-x
         if (matrix.rows != matrix.cols) { return null; }
         else {
             x = x-1;
