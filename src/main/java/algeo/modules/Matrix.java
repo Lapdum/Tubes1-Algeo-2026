@@ -80,26 +80,45 @@ public class Matrix {
 
     // Operasi Baris Elementer
 
-    public static Matrix partialPivoting(Matrix m, int c) {
-        double mx = 0;
-        int pos = 0;
-        for (int i = 0; i < m.getRows(); i++) {
-            if (m.getValue(i, c) > mx) {
-                mx = m.getValue(i, c);
-                pos = i;
+    public static Matrix partialPivoting (Matrix m, int pivotRow, int col){ 
+        int position = pivotRow;// nomor baris elemen pivot terbesar
+        double max = m.getValue(pivotRow, col);
+
+
+        for(int i=pivotRow+1; i<m.getRows(); i++){ //cari nilai absolut terbesar 1 kolom
+            double value = m.getValue(i, col);
+            
+            //absolut
+            double absValue;
+            if (value < 0) {
+                absValue = -value;
+            } else {
+                absValue = value;
+            }
+
+            double absMax;
+            if (max < 0) {
+                absMax = -max;
+            } else {
+                absMax = max;
+            }
+
+            if (absValue > absMax) {
+                max = value;
+                position = i;}
+        }
+        //proses tukar pivot yg punya nilai terbesar, gerak diagonal ke bawah
+        if(position != pivotRow){
+            for(int j = 0; j<m.getCols(); j++){
+                double temp = m.getValue(pivotRow, j);
+
+                m.set(pivotRow, j, m.getValue(position, j));
+                m.set(position, j, temp);
+
             }
         }
-
-        if (pos > 0) {
-            for (int i = 0; i < m.getCols(); i++) {
-                double a = m.getValue(0, i);
-                double b = m.getValue(pos, i);
-                m.set(pos, i, a);
-                m.set(0, i, b);
-            }
-        }
-
         return m;
+
     }
 
     public static Matrix multiplyRow(Matrix m, int r, double multiplier) {
@@ -115,7 +134,7 @@ public class Matrix {
         for (int i = 0; i < m.getCols(); i++) {
             double m1 = m.getValue(r1, i);
             double m2 = m.getValue(r2, i);
-            double res = m1 + m2;
+            double res = m1 + multiplier*m2;
             m.set(r1, i, res);
         }
 
