@@ -1,4 +1,8 @@
 {
     "java.configuration.updateBuildConfiguration": "automatic",
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "code-runner.runInTerminal": true,
+    "code-runner.executorMap": {
+        "java": "cd $workspaceRoot\\src\\main\\java && javac algeo\\App.java && java algeo.App"
+    }
 }
