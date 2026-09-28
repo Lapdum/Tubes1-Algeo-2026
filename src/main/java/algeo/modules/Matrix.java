@@ -228,4 +228,24 @@ public class Matrix {
         }
 
     }
+
+    // Operasi matriks
+
+    public static Matrix perkalianMatriks(Matrix m1, Matrix m2) {
+        Matrix returnM = new Matrix(m1.getRows(), m2.getCols());
+        double num = 0;
+
+        for (int i = 0; i < m1.getRows(); i++) {
+            for (int j = 0; j < m2.getCols(); j++) {
+                returnM.set(i, j, 0);
+                for (int k = 0; k < m1.getCols(); k++) {
+                    num += (m1.getValue(i, k) * m2.getValue(k, j));
+                }
+                returnM.set(i, j, num);
+                num = 0;
+            }
+        }
+
+        return returnM;
+    }
 }
