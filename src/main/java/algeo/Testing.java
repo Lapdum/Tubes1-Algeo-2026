@@ -6,7 +6,8 @@ import algeo.modules.Inverse;
 public class Testing {
     public static void main(String[] args) {
         Matrix m = Matrix.inputMatrix();
-        Matrix inverse = Inverse.inverseGaussJordan(m);
+        m.printMatrix();
+        Matrix inverse = Inverse.inverseAdjoint(m);
 
         for (int i = 0; i < inverse.getRows(); i++) {
             for (int j = 0; j < inverse.getCols(); j++) {
