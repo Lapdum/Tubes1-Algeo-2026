@@ -75,21 +75,58 @@ public class SPL {
         System.out.println("3. Metode Matriks Balikan");
         System.out.println("4. Kaidah Cramer\n");
 
-        System.out.println("Testing Eliminasi Gauss!\n\n");
-        m = eliminasiGauss(m);
+        boolean inputValidation = true;
+        int inputMethod = 0;
 
-        if (noSolution(m)) {
-            printSPL(m);
-            System.out.println();
-            System.out.println("Sistem persamaan linear tidak memiliki solusi");
-        } else {
-            buildAnswer(m, substitusiMundur(m));
-            printSPL(m);
-            System.out.println();
-            System.out.println("Sistem persamaan linear memiliki solusi:");
-            printSolution(m.answerSPL);
+        while (inputValidation) {
+            try {
+                System.out.println("Metode penyelesaian yang dipilih:");
+                inputMethod = sc.nextInt();
+
+                if ((inputMethod == 1) || (inputMethod == 2) || (inputMethod == 3) || inputMethod == 4) {
+                    inputValidation = false;
+                } else {
+                    System.out.println("Input angka tidak ada pada opsi!");
+
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Input harus berupa angka!");
+                sc.next();
+            }
+
+            sc.nextLine();
+
+            if (inputMethod == 1) {
+                m = eliminasiGauss(m);
+                if (noSolution(m)) {
+                    printSPL(m);
+                    System.out.println();
+                    System.out.println("Sistem persamaan linear tidak memiliki solusi");
+                } else {
+                    buildAnswer(m, substitusiMundur(m));
+                    printSPL(m);
+                    System.out.println();
+                    System.out.println("Sistem persamaan linear memiliki solusi:");
+                    printSolution(m.answerSPL);
+                }
+            } else if (inputMethod == 2) {
+                m = eliminasiGaussJordan(m);
+                if (noSolution(m)) {
+                    printSPL(m);
+                    System.out.println();
+                    System.out.println("Sistem persamaan linear tidak memiliki solusi");
+                } else {
+                    buildAnswer(m, substitusiMundur(m));
+                    printSPL(m);
+                    System.out.println();
+                    System.out.println("Sistem persamaan linear memiliki solusi:");
+                    printSolution(m.answerSPL);
+                }
+            } else {
+                System.out.println("Other method currenly being built!");
+            }
+
         }
-
     }
 
     private static void fileInput() {
@@ -174,6 +211,35 @@ public class SPL {
         for (int i = 0; i < r; i++) {
             m.flag[i] = Matrix.isAllZeroRow(m, i);
         }
+        return m;
+    }
+
+    private static Matrix eliminasiGaussJordan(Matrix m) {
+        m = eliminasiGauss(m);
+
+        System.out.println("Starting jordan elimination:");
+
+        int r = m.getRows();
+        int c = m.getCols();
+
+        for (int i = r - 1; i >= 0; i--) {
+            for (int j = 0; j < c - 1; j++) {
+                if (m.isPivot[i][j]) {
+                    for (int k = i - 1; k >= 0; k--) {
+                        double multiplier = m.getValue(k, j);
+                        m = Matrix.subtractRowbyRow(m, k, i, multiplier);
+
+                        System.out.println(
+                                "After subtracting row " + (k + 1) + " with row " + (i + 1) + " multiplied by "
+                                        + multiplier
+                                        + ":");
+                        Matrix.printMatrix(m);
+                        System.out.println();
+                    }
+                }
+            }
+        }
+
         return m;
     }
 
@@ -364,7 +430,7 @@ public class SPL {
                         double nextNum = m.getValue(i, j + 1);
                         if (nextNum < 0) {
                             System.out.printf("- ");
-                        } else {
+                        } else if (nextNum > 0) {
                             System.out.printf("+ ");
                         }
 
