@@ -3,14 +3,9 @@ package algeo.modules;
 import java.util.Scanner;
 
 public class Matrix {
-    private int rows;
-    private int cols;
-    private double[][] data; // untuk menyimpan input dr user
-    public boolean[] flag;
-    public boolean[] isPivotCol;
-    public boolean[][] isPivot;
-    public String[] answerSPL;
-    public boolean freeVar;
+    int rows;
+    int cols;
+    double[][] data; // untuk menyimpan input dr user
 
     private static Scanner sc = new Scanner(System.in);
 
@@ -19,12 +14,8 @@ public class Matrix {
         this.rows = rows;
         this.cols = cols; // this itu artiny objek yg lagi dipake/dimiliki oleh konstruktor (public
                           // matrix)
-        this.freeVar = false;
         this.data = new double[rows][cols];
-        this.flag = new boolean[rows];
-        this.isPivotCol = new boolean[cols];
-        this.isPivot = new boolean[rows][cols];
-        this.answerSPL = new String[cols];
+
     }
 
     public static Matrix inputMatrix() {
@@ -71,18 +62,6 @@ public class Matrix {
         return returnM;
     }
 
-    public static Matrix doubletoMatrix(double[][] m, int r, int c) {
-        Matrix returnM = new Matrix(r, c);
-
-        for (int i = 0; i < r; i++) {
-            for (int j = 0; j < c; j++) {
-                returnM.data[i][j] = m[i][j];
-            }
-        }
-
-        return returnM;
-    }
-
     public int getRows() {
         return rows;
     }
@@ -101,79 +80,46 @@ public class Matrix {
 
     // Operasi Baris Elementer
 
-    public static int partialPivoting(Matrix m, int r, int c) {
-        double mx = 1e-9;
-        int pos = -1;
-        for (int i = r; i < m.getRows(); i++) {
-            double num = absolute(m.getValue(i, c));
-            if (num > mx) {
-                mx = num;
-                pos = i;
+    public static Matrix partialPivoting (Matrix m, int pivotRow, int col){ 
+        int position = pivotRow;// nomor baris elemen pivot terbesar
+        double max = m.getValue(pivotRow, col);
+
+
+        for(int i=pivotRow+1; i<m.getRows(); i++){ //cari nilai absolut terbesar 1 kolom
+            double value = m.getValue(i, col);
+            
+            //absolut
+            double absValue;
+            if (value < 0) {
+                absValue = -value;
+            } else {
+                absValue = value;
             }
-        }
 
-        return pos;
-    }
-
-    public static void cleanZeros(Matrix m) {
-        int r = m.getRows();
-        int c = m.getCols();
-        for (int i = 0; i < r; i++) {
-            for (int j = 0; j < c; j++) {
-                if (m.getValue(i, j) == 0) {
-                    m.set(i, j, 0.0);
-                }
+            double absMax;
+            if (max < 0) {
+                absMax = -max;
+            } else {
+                absMax = max;
             }
-        }
-    }
 
-    public static boolean isAllZeroRow(Matrix m, int row) {
-        int c = m.getCols();
-        for (int j = 0; j < c - 1; j++) {
-            if (m.getValue(row, j) != 0) {
-                return false;
-            }
+            if (absValue > absMax) {
+                max = value;
+                position = i;}
         }
-        m.flag[row] = true;
-        return true;
-    }
+        //proses tukar pivot yg punya nilai terbesar, gerak diagonal ke bawah
+        if(position != pivotRow){
+             System.out.println("R" + (pivotRow + 1) + " <-> R" + (position + 1));
+            for(int j = 0; j<m.getCols(); j++){
+                double temp = m.getValue(pivotRow, j);
 
-    public static Matrix moveZerosDown(Matrix m) {
-        int r = m.getRows();
-        int last = r - 1;
-        for (int i = 0; i < last; i++) {
-            if (isAllZeroRow(m, i)) {
-                while (last > i && isAllZeroRow(m, last)) {
-                    last--;
-                }
-                if (last > i) {
-                    m = switchRow(m, i, last);
-                    last--;
-                }
+                m.set(pivotRow, j, m.getValue(position, j));
+                m.set(position, j, temp);
+
             }
         }
         return m;
-    }
 
-    public static Matrix switchRow(Matrix m, int initialPos, int targetPos) {
-        if (targetPos >= 0) {
-            for (int i = 0; i < m.getCols(); i++) {
-                double a = m.getValue(initialPos, i);
-                double b = m.getValue(targetPos, i);
-                m.set(targetPos, i, a);
-                m.set(initialPos, i, b);
-            }
-        }
-
-        return m;
-    }
-
-    public static double absolute(double a) {
-        if (a < 0) {
-            a *= -1;
-        }
-
-        return a;
     }
 
     public static Matrix multiplyRow(Matrix m, int r, double multiplier) {
@@ -188,8 +134,8 @@ public class Matrix {
     public static Matrix addRowbyRow(Matrix m, int r1, int r2, double multiplier) { // r1 target
         for (int i = 0; i < m.getCols(); i++) {
             double m1 = m.getValue(r1, i);
-            double m2 = m.getValue(r2, i) * multiplier;
-            double res = m1 + m2;
+            double m2 = m.getValue(r2, i);
+            double res = m1 + multiplier*m2;
             m.set(r1, i, res);
         }
 
@@ -199,33 +145,19 @@ public class Matrix {
     public static Matrix subtractRowbyRow(Matrix m, int r1, int r2, double multiplier) { // r1 target
         for (int i = 0; i < m.getCols(); i++) {
             double m1 = m.getValue(r1, i);
-            double m2 = m.getValue(r2, i) * multiplier;
+            double m2 = m.getValue(r2, i);
             double res = m1 - m2;
             m.set(r1, i, res);
         }
 
         return m;
     }
-
-    public static double round3(double x) {
-        if (x < 0) {
-            return (int) (x * 1000 - 0.5) / 1000.0;
-        }
-        return (int) (x * 1000 + 0.5) / 1000.0;
-    }
-
-    // Print output
-
-    public static void printMatrix(Matrix m) {
-        int r = m.getRows();
-        int c = m.getCols();
-
-        for (int i = 0; i < r; i++) {
-            for (int j = 0; j < c; j++) {
-                System.out.printf(round3(m.getValue(i, j)) + " ");
+    public void printMatrix(){
+        for (int i = 0; i<rows;i++){
+            for(int j = 0; j<cols; j++){
+                System.out.print(data[i][j]+ " ");
             }
             System.out.println();
         }
-
     }
 }
