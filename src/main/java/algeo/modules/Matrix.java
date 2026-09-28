@@ -3,9 +3,9 @@ package algeo.modules;
 import java.util.Scanner;
 
 public class Matrix {
-    private int rows;
-    private int cols;
-    private double[][] data; // untuk menyimpan input dr user
+    public int rows;
+    public int cols;
+    public double[][] data; // untuk menyimpan input dr user
     public boolean[] flag;
     public boolean[] isPivotCol;
     public boolean[][] isPivot;

@@ -6,7 +6,7 @@ import algeo.modules.Inverse;
 public class Testing {
     public static void main(String[] args) {
         Matrix m = Matrix.inputMatrix();
-        m.printMatrix();
+        Matrix.printMatrix(m);
         Matrix inverse = Inverse.inverseAdjoint(m);
 
         for (int i = 0; i < inverse.getRows(); i++) {
