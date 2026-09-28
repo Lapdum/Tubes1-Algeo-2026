@@ -98,35 +98,31 @@ public class SPL {
 
             if (inputMethod == 1) {
                 m = eliminasiGauss(m);
-                if (noSolution(m)) {
-                    printSPL(m);
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear tidak memiliki solusi");
-                } else {
-                    buildAnswer(m, substitusiMundur(m));
-                    printSPL(m);
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear memiliki solusi:");
-                    printSolution(m.answerSPL);
-                }
             } else if (inputMethod == 2) {
                 m = eliminasiGaussJordan(m);
+            } else if (inputMethod == 3) {
                 if (noSolution(m)) {
-                    printSPL(m);
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear tidak memiliki solusi");
+                    System.out.println("Metode inverse tidak dapat digunakan karena sistem tidak memiliki balikan!");
                 } else {
-                    buildAnswer(m, substitusiMundur(m));
-                    printSPL(m);
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear memiliki solusi:");
-                    printSolution(m.answerSPL);
                 }
             } else {
-                System.out.println("Other method currenly being built!");
+                System.out.println("Kaidah Cramer lagi on progress!");
+            }
+
+            if (noSolution(m)) {
+                printSPL(m);
+                System.out.println();
+                System.out.println("Sistem persamaan linear tidak memiliki solusi");
+            } else {
+                buildAnswer(m, substitusiMundur(m));
+                printSPL(m);
+                System.out.println();
+                System.out.println("Sistem persamaan linear memiliki solusi:");
+                printSolution(m.answerSPL);
             }
 
         }
+
     }
 
     private static void fileInput() {
@@ -238,6 +234,43 @@ public class SPL {
                     }
                 }
             }
+        }
+
+        return m;
+    }
+
+    private static Matrix eliminasiInverse(Matrix m) {
+        int r = m.getRows();
+        int c = m.getCols();
+
+        if (r != c - 1) {
+            return m;
+        }
+
+        double[][] currM = new double[r][c + 1];
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c - 1; c++) {
+                currM[i][j] = m.getValue(i, j);
+            }
+        }
+
+        int zeroC = c - 1;
+        for (int i = 0; i < r; i++) {
+            for (int j = c - 1; j < c + 2; j++) {
+                if (zeroC == j) {
+                    currM[i][j] = 1;
+                } else {
+                    currM[i][j] = 0;
+                }
+            }
+            zeroC++;
+        }
+
+        m = Matrix.doubletoMatrix(currM, r, c + 1);
+        m = Matrix.moveZerosDown(m);
+        for (int i = 0; i < r; i++) {
+            m.flag[i] = Matrix.isAllZeroRow(m, i);
         }
 
         return m;

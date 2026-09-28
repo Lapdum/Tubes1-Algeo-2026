@@ -71,6 +71,18 @@ public class Matrix {
         return returnM;
     }
 
+    public static Matrix doubletoMatrix(double[][] m, int r, int c) {
+        Matrix returnM = new Matrix(r, c);
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                returnM.data[i][j] = m[i][j];
+            }
+        }
+
+        return returnM;
+    }
+
     public int getRows() {
         return rows;
     }
