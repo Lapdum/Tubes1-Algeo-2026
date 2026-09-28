@@ -77,13 +77,16 @@ public class SPL {
 
         System.out.println("Testing Eliminasi Gauss!\n\n");
         m = eliminasiGauss(m);
+
         if (noSolution(m)) {
             printSPL(m);
+            System.out.println();
             System.out.println("Sistem persamaan linear tidak memiliki solusi");
         } else {
             buildAnswer(m, substitusiMundur(m));
             printSPL(m);
             System.out.println();
+            System.out.println("Sistem persamaan linear memiliki solusi:");
             printSolution(m.answerSPL);
         }
 
@@ -98,11 +101,14 @@ public class SPL {
         int c = m.getCols();
 
         for (int i = 0; i < r; i++) {
-            if (m.flag[i] && m.getValue(i, c) != 0) {
+            if (m.flag[i] && m.getValue(i, c - 1) != 0) {
                 return true;
             }
         }
- private static Matrix eliminasiGauss(Matrix m) {
+        return false;
+    }
+
+    private static Matrix eliminasiGauss(Matrix m) {
         int r = m.getRows();
         int c = m.getCols();
         int nVar = c - 1;
@@ -123,7 +129,8 @@ public class SPL {
                 continue;
             } else if (bestPivot != curr) {
                 m = Matrix.switchRow(m, curr, bestPivot);
-                System.out.println("After partial pivoting between row " + curr + " and row " + bestPivot + ":");
+                System.out.println(
+                        "After partial pivoting between row " + (curr + 1) + " and row " + (bestPivot + 1) + ":");
                 Matrix.printMatrix(m);
                 System.out.println();
             }
@@ -134,21 +141,28 @@ public class SPL {
             if (num != 1) {
                 m = Matrix.multiplyRow(m, curr, 1 / (num));
                 num = m.getValue(curr, curc);
+                System.out.println("After normalizing row " + (curr + 1) + ":");
+                Matrix.printMatrix(m);
+                System.out.println();
             }
 
             // Make row below collumn to zero
             for (int j = curr + 1; j < r; j++) {
-                for (int k = curc; k < c; k++) {
-                    double multiplier = m.getValue(j, k);
-                    m = Matrix.subtractRowbyRow(m, j, curr, multiplier);
-                }
+                double multiplier = m.getValue(j, curc);
+                m = Matrix.subtractRowbyRow(m, j, curr, multiplier);
+
+                System.out.println(
+                        "After subtracting row " + (j + 1) + " with row " + (curr + 1) + " multiplied by " + multiplier
+                                + ":");
+                Matrix.printMatrix(m);
+                System.out.println();
             }
 
             Matrix.cleanZeros(m);
 
             for (int j = 0; j < c; j++) {
-                if (m.getValue(i, j) != 0) {
-                    m.isPivot[i][j] = true;
+                if (m.getValue(curr, j) != 0) {
+                    m.isPivot[curr][j] = true;
                     m.isPivotCol[j] = true;
                     break;
                 }
@@ -157,10 +171,10 @@ public class SPL {
         }
 
         m = Matrix.moveZerosDown(m);
-
+        for (int i = 0; i < r; i++) {
+            m.flag[i] = Matrix.isAllZeroRow(m, i);
+        }
         return m;
-    }
-        return false;
     }
 
     private static final String[] PARAM_NAMES = { "r", "s", "t", "u", "v", "w", "a", "b", "c", "d", "e" };
@@ -311,7 +325,11 @@ public class SPL {
 
     private static void printSolution(String[] answerSPL) {
         for (int i = 0; i < answerSPL.length - 1; i++) {
-            System.out.printf(answerSPL[i] + "; ");
+            if (i != answerSPL.length - 2) {
+                System.out.printf(answerSPL[i] + "; ");
+            } else {
+                System.out.printf("" + answerSPL[i]);
+            }
         }
         System.out.println();
     }
@@ -321,9 +339,7 @@ public class SPL {
         int c = m.getCols();
 
         for (int i = 0; i < r; i++) {
-            boolean isFlag = m.flag[i];
-
-            if (isFlag) {
+            if (m.flag[i]) {
                 continue;
             }
             for (int j = 0; j < c; j++) {

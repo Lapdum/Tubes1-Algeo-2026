@@ -117,7 +117,7 @@ public class Matrix {
 
     public static boolean isAllZeroRow(Matrix m, int row) {
         int c = m.getCols();
-        for (int j = 0; j < c; j++) {
+        for (int j = 0; j < c - 1; j++) {
             if (m.getValue(row, j) != 0) {
                 return false;
             }
