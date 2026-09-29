@@ -16,6 +16,7 @@ public class Matrix {
     public boolean freeVar;
 
     private static Scanner sc = new Scanner(System.in);
+    private static final double EPS = 1e-9;
 
     // Fungsi Dasar Matriks
     public Matrix(int rows, int cols) {
@@ -185,16 +186,31 @@ public class Matrix {
         return pos;
     }
 
-    public static void cleanZeros(Matrix m) {
+    public static Matrix round3All(Matrix m) {
+        int r = m.getRows();
+        int c = m.getCols();
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                double num = round3(m.getValue(i, j));
+                m.set(i, j, num);
+            }
+        }
+
+        return m;
+    }
+
+    public static Matrix cleanZeros(Matrix m) {
         int r = m.getRows();
         int c = m.getCols();
         for (int i = 0; i < r; i++) {
             for (int j = 0; j < c; j++) {
-                if (m.getValue(i, j) == 0) {
+                if (m.getValue(i, j) > -EPS && m.getValue(i, j) < EPS) {
                     m.set(i, j, 0.0);
                 }
             }
         }
+        return m;
     }
 
     public static boolean isAllZeroRow(Matrix m, int row) {
@@ -204,7 +220,6 @@ public class Matrix {
                 return false;
             }
         }
-        m.flag[row] = true;
         return true;
     }
 

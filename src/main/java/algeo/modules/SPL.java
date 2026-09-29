@@ -219,7 +219,6 @@ public class SPL {
                 m = eliminasiGauss(m);
 
                 if (noSolution(m)) {
-                    printSPL(m);
                     System.out.println();
                     System.out.println("Sistem persamaan linear tidak memiliki solusi");
                 } else {
@@ -233,7 +232,6 @@ public class SPL {
                 m = eliminasiGaussJordan(m);
 
                 if (noSolution(m)) {
-                    printSPL(m);
                     System.out.println();
                     System.out.println("Sistem persamaan linear tidak memiliki solusi");
                 } else {
@@ -358,20 +356,23 @@ public class SPL {
                 Matrix.printMatrix(m);
                 System.out.println();
             }
-
-            Matrix.cleanZeros(m);
-
-            for (int j = 0; j < c; j++) {
-                if (m.getValue(curr, j) != 0) {
-                    m.isPivot[curr][j] = true;
-                    m.isPivotCol[j] = true;
-                    break;
-                }
-            }
             pivotRow++;
         }
 
+        m = Matrix.cleanZeros(m);
         m = Matrix.moveZerosDown(m);
+
+        for (int i = 0; i < r; i++) {
+            boolean checker = true;
+            for (int j = 0; j < c - 1; j++) {
+                if (m.getValue(i, j) != 0 && checker) {
+                    m.isPivot[i][j] = true;
+                    m.isPivotCol[j] = true;
+                    checker = false;
+                }
+            }
+        }
+
         for (int i = 0; i < r; i++) {
             m.flag[i] = Matrix.isAllZeroRow(m, i);
         }
@@ -604,7 +605,7 @@ public class SPL {
 
         for (int j = 0; j < c; j++) {
             if (paramSlot[j] != -1) {
-                sol[j][paramSlot[j]] = 1.0;
+                sol[j][paramSlot[j]] = 1;
             }
         }
 
@@ -616,7 +617,7 @@ public class SPL {
                     break;
                 }
             }
-            if (p == -1) {
+            if (m.flag[i]) {
                 continue;
             }
 
@@ -634,6 +635,7 @@ public class SPL {
             }
 
             double pivotVal = m.getValue(i, p);
+
             for (int s = 0; s <= k; s++) {
                 sol[p][s] /= pivotVal;
             }
@@ -643,7 +645,7 @@ public class SPL {
                 for (int s = 0; s <= k; s++) {
 
                     if (sol[j][s] > -EPS && sol[j][s] < EPS) {
-                        sol[j][s] = 0.0;
+                        sol[j][s] = 0;
                     }
                 }
             }
