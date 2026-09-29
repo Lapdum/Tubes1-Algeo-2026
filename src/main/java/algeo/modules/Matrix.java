@@ -6,6 +6,7 @@ public class Matrix {
     public int rows;
     public int cols;
     public double[][] data; // untuk menyimpan input dr user
+    public double[][] determinantCramer;
     public boolean[] flag;
     public boolean[] isPivotCol;
     public boolean[][] isPivot;
@@ -21,10 +22,12 @@ public class Matrix {
                           // matrix)
         this.freeVar = false;
         this.data = new double[rows][cols];
+        this.determinantCramer = new double[cols - 1][1];
         this.flag = new boolean[rows];
         this.isPivotCol = new boolean[cols];
-        this.isPivot = new boolean[rows][cols];
-        this.answerSPL = new String[cols];
+        this.isPivot = new boolean[rows][cols - 1];
+        this.answerSPL = new String[cols - 1];
+
     }
 
     public static Matrix inputMatrix() {

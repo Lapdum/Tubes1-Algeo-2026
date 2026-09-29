@@ -167,7 +167,11 @@ public class SPL {
                     printSolution(m.answerSPL);
                 }
             } else {
-                System.out.println("Kaidah Cramer lagi on progress!");
+                m = kaidahCramer(m);
+
+                buildAnswer(m, m.determinantCramer);
+                System.out.println("Sistem persamaan linear memiliki solusi:");
+                printSolution(m.answerSPL);
             }
 
         }
@@ -329,6 +333,70 @@ public class SPL {
                 }
             }
             m.flag[i] = isZero;
+        }
+
+        return m;
+    }
+
+    private static Matrix kaidahCramer(Matrix m) {
+        int r = m.getRows();
+        int c = m.getCols();
+
+        Matrix b = new Matrix(r, 1);
+        Matrix aInitial = new Matrix(r, c - 1);
+        Matrix aModified = new Matrix(r, c - 1);
+
+        // Fill A and b
+
+        double[][] aDouble = new double[r][c - 1];
+        double[][] bDouble = new double[r][1];
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c - 1; j++) {
+                aDouble[i][j] = m.getValue(i, j);
+            }
+        }
+
+        for (int i = 0; i < r; i++) {
+            bDouble[i][0] = m.getValue(i, c - 1);
+        }
+
+        b = Matrix.doubletoMatrix(bDouble, r, 1);
+        aInitial = Matrix.doubletoMatrix(aDouble, r, c - 1);
+        aModified = Matrix.doubletoMatrix(aDouble, r, c - 1);
+
+        double detAInitial = ModuleDeterminan.ekspansiKofaktorBaris(1, aInitial);
+
+        System.out.println("Original:");
+        Matrix.printMatrix(aModified);
+        System.out.println();
+
+        for (int cols = 0; cols < c - 1; cols++) {
+            for (int row = 0; row < r; row++) {
+                double num = b.getValue(row, 0);
+                aModified.set(row, cols, num);
+            }
+            m.determinantCramer[cols][0] = ModuleDeterminan.ekspansiKofaktorBaris(1, aModified);
+
+            System.out.println("Modified:");
+            Matrix.printMatrix(aModified);
+            System.out.println();
+
+            for (int row = 0; row < r; row++) {
+                double num = aInitial.getValue(row, cols);
+                aModified.set(row, cols, num);
+            }
+            System.out.println("Reverted:");
+            Matrix.printMatrix(aModified);
+            System.out.println();
+        }
+
+        for (int i = 0; i < c - 1; i++) {
+            System.out.println("" + m.determinantCramer[i][0]);
+        }
+
+        for (int i = 0; i < c - 1; i++) {
+            m.determinantCramer[i][0] /= detAInitial;
         }
 
         return m;
