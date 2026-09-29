@@ -1,6 +1,8 @@
 package algeo.modules;
 
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class Matrix {
     public int rows;
@@ -26,7 +28,7 @@ public class Matrix {
         this.flag = new boolean[rows];
         this.isPivotCol = new boolean[cols];
         this.isPivot = new boolean[rows][cols - 1];
-        this.answerSPL = new String[cols - 1];
+        this.answerSPL = new String[cols];
 
     }
 
@@ -72,6 +74,71 @@ public class Matrix {
         }
 
         return returnM;
+    }
+
+    public static Matrix inputFileMatrix() {
+        System.out.printf("Masukkan nama file (termasuk extension .txt): ");
+        String namaFile = sc.nextLine();
+
+        File fileMatrix = new File("../../../test/" + namaFile);
+        boolean validName = true;
+        while (validName) {
+            try (Scanner readFile = new Scanner(fileMatrix)) {
+                System.out.println("File ditemukan!");
+                validName = false;
+            } catch (FileNotFoundException e) {
+                System.out.println("File tidak ditemukan!");
+                sc.next();
+            }
+        }
+
+        double[][] m = new double[1001][1002];
+        int r = 0;
+        int c = 0;
+        try (Scanner readRow = new Scanner(fileMatrix, StandardCharsets.UTF_8.name())) {
+            while (readRow.hasNextLine()) {
+                String row = readRow.nextLine();
+                if (row.length() == 0 || r == 1001) {
+                    System.out.println("Kepanjangan bruh!");
+                } else {
+                    row = row.replace(",", ".");
+
+                    String[] token = row.split(" ");
+                    for (int i = 0; i < token.length; i++) {
+                        if (token[i].contains("/")) {
+                            String[] numbers = token[i].split("/");
+                            double numerator = Double.parseDouble(numbers[0]);
+                            double denominator = Double.parseDouble(numbers[1]);
+                            double decimal = numerator / denominator;
+                            m[r][i] = decimal;
+                        } else {
+                            m[r][i] = Double.parseDouble(token[i]);
+                        }
+                    }
+                    r += 1;
+                    if (c == 0) {
+                        c = token.length;
+                    } else if (token.length != c) {
+                        System.out.println("Belum aku bikin try catchnya");
+                    }
+                }
+            }
+
+            Matrix returnM = new Matrix(r, c);
+
+            for (int i = 0; i < r; i++) {
+                for (int j = 0; j < c; j++) {
+                    returnM.data[i][j] = m[i][j];
+                }
+            }
+
+            return returnM;
+        } catch (FileNotFoundException e) {
+            System.out.println("File tidak ditemukan!");
+            sc.next();
+        }
+
+        return null;
     }
 
     public static Matrix doubletoMatrix(double[][] m, int r, int c) {
