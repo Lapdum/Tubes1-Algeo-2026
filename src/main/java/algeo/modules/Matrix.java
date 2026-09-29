@@ -1,11 +1,19 @@
 package algeo.modules;
 
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class Matrix {
-    int rows;
-    int cols;
-    double[][] data; // untuk menyimpan input dr user
+    public int rows;
+    public int cols;
+    public double[][] data; // untuk menyimpan input dr user
+    public double[][] determinantCramer;
+    public boolean[] flag;
+    public boolean[] isPivotCol;
+    public boolean[][] isPivot;
+    public String[] answerSPL;
+    public boolean freeVar;
 
     private static Scanner sc = new Scanner(System.in);
 
@@ -14,7 +22,13 @@ public class Matrix {
         this.rows = rows;
         this.cols = cols; // this itu artiny objek yg lagi dipake/dimiliki oleh konstruktor (public
                           // matrix)
+        this.freeVar = false;
         this.data = new double[rows][cols];
+        this.determinantCramer = new double[cols - 1][1];
+        this.flag = new boolean[rows];
+        this.isPivotCol = new boolean[cols];
+        this.isPivot = new boolean[rows][cols - 1];
+        this.answerSPL = new String[cols];
 
     }
 
@@ -62,6 +76,83 @@ public class Matrix {
         return returnM;
     }
 
+    public static Matrix inputFileMatrix() {
+        System.out.printf("Masukkan nama file (termasuk extension .txt): ");
+        String namaFile = sc.nextLine();
+
+        File fileMatrix = new File("../../../test/" + namaFile);
+        boolean validName = true;
+        while (validName) {
+            try (Scanner readFile = new Scanner(fileMatrix)) {
+                System.out.println("File ditemukan!");
+                validName = false;
+            } catch (FileNotFoundException e) {
+                System.out.println("File tidak ditemukan!");
+                sc.next();
+            }
+        }
+
+        double[][] m = new double[1001][1002];
+        int r = 0;
+        int c = 0;
+        try (Scanner readRow = new Scanner(fileMatrix, StandardCharsets.UTF_8.name())) {
+            while (readRow.hasNextLine()) {
+                String row = readRow.nextLine();
+                if (row.length() == 0 || r == 1001) {
+                    System.out.println("Kepanjangan bruh!");
+                } else {
+                    row = row.replace(",", ".");
+
+                    String[] token = row.split(" ");
+                    for (int i = 0; i < token.length; i++) {
+                        if (token[i].contains("/")) {
+                            String[] numbers = token[i].split("/");
+                            double numerator = Double.parseDouble(numbers[0]);
+                            double denominator = Double.parseDouble(numbers[1]);
+                            double decimal = numerator / denominator;
+                            m[r][i] = decimal;
+                        } else {
+                            m[r][i] = Double.parseDouble(token[i]);
+                        }
+                    }
+                    r += 1;
+                    if (c == 0) {
+                        c = token.length;
+                    } else if (token.length != c) {
+                        System.out.println("Belum aku bikin try catchnya");
+                    }
+                }
+            }
+
+            Matrix returnM = new Matrix(r, c);
+
+            for (int i = 0; i < r; i++) {
+                for (int j = 0; j < c; j++) {
+                    returnM.data[i][j] = m[i][j];
+                }
+            }
+
+            return returnM;
+        } catch (FileNotFoundException e) {
+            System.out.println("File tidak ditemukan!");
+            sc.next();
+        }
+
+        return null;
+    }
+
+    public static Matrix doubletoMatrix(double[][] m, int r, int c) {
+        Matrix returnM = new Matrix(r, c);
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                returnM.data[i][j] = m[i][j];
+            }
+        }
+
+        return returnM;
+    }
+
     public int getRows() {
         return rows;
     }
@@ -80,46 +171,79 @@ public class Matrix {
 
     // Operasi Baris Elementer
 
-    public static Matrix partialPivoting (Matrix m, int pivotRow, int col){ 
-        int position = pivotRow;// nomor baris elemen pivot terbesar
-        double max = m.getValue(pivotRow, col);
-
-
-        for(int i=pivotRow+1; i<m.getRows(); i++){ //cari nilai absolut terbesar 1 kolom
-            double value = m.getValue(i, col);
-            
-            //absolut
-            double absValue;
-            if (value < 0) {
-                absValue = -value;
-            } else {
-                absValue = value;
+    public static int partialPivoting(Matrix m, int r, int c) {
+        double mx = 1e-9;
+        int pos = -1;
+        for (int i = r; i < m.getRows(); i++) {
+            double num = absolute(m.getValue(i, c));
+            if (num > mx) {
+                mx = num;
+                pos = i;
             }
-
-            double absMax;
-            if (max < 0) {
-                absMax = -max;
-            } else {
-                absMax = max;
-            }
-
-            if (absValue > absMax) {
-                max = value;
-                position = i;}
         }
-        //proses tukar pivot yg punya nilai terbesar, gerak diagonal ke bawah
-        if(position != pivotRow){
-             System.out.println("R" + (pivotRow + 1) + " <-> R" + (position + 1));
-            for(int j = 0; j<m.getCols(); j++){
-                double temp = m.getValue(pivotRow, j);
 
-                m.set(pivotRow, j, m.getValue(position, j));
-                m.set(position, j, temp);
+        return pos;
+    }
 
+    public static void cleanZeros(Matrix m) {
+        int r = m.getRows();
+        int c = m.getCols();
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                if (m.getValue(i, j) == 0) {
+                    m.set(i, j, 0.0);
+                }
+            }
+        }
+    }
+
+    public static boolean isAllZeroRow(Matrix m, int row) {
+        int c = m.getCols();
+        for (int j = 0; j < c - 1; j++) {
+            if (m.getValue(row, j) != 0) {
+                return false;
+            }
+        }
+        m.flag[row] = true;
+        return true;
+    }
+
+    public static Matrix moveZerosDown(Matrix m) {
+        int r = m.getRows();
+        int last = r - 1;
+        for (int i = 0; i < last; i++) {
+            if (isAllZeroRow(m, i)) {
+                while (last > i && isAllZeroRow(m, last)) {
+                    last--;
+                }
+                if (last > i) {
+                    m = switchRow(m, i, last);
+                    last--;
+                }
             }
         }
         return m;
+    }
 
+    public static Matrix switchRow(Matrix m, int initialPos, int targetPos) {
+        if (targetPos >= 0) {
+            for (int i = 0; i < m.getCols(); i++) {
+                double a = m.getValue(initialPos, i);
+                double b = m.getValue(targetPos, i);
+                m.set(targetPos, i, a);
+                m.set(initialPos, i, b);
+            }
+        }
+
+        return m;
+    }
+
+    public static double absolute(double a) {
+        if (a < 0) {
+            a *= -1;
+        }
+
+        return a;
     }
 
     public static Matrix multiplyRow(Matrix m, int r, double multiplier) {
@@ -134,8 +258,8 @@ public class Matrix {
     public static Matrix addRowbyRow(Matrix m, int r1, int r2, double multiplier) { // r1 target
         for (int i = 0; i < m.getCols(); i++) {
             double m1 = m.getValue(r1, i);
-            double m2 = m.getValue(r2, i);
-            double res = m1 + multiplier*m2;
+            double m2 = m.getValue(r2, i) * multiplier;
+            double res = m1 + m2;
             m.set(r1, i, res);
         }
 
@@ -145,19 +269,53 @@ public class Matrix {
     public static Matrix subtractRowbyRow(Matrix m, int r1, int r2, double multiplier) { // r1 target
         for (int i = 0; i < m.getCols(); i++) {
             double m1 = m.getValue(r1, i);
-            double m2 = m.getValue(r2, i);
+            double m2 = m.getValue(r2, i) * multiplier;
             double res = m1 - m2;
             m.set(r1, i, res);
         }
 
         return m;
     }
-    public void printMatrix(){
-        for (int i = 0; i<rows;i++){
-            for(int j = 0; j<cols; j++){
-                System.out.print(data[i][j]+ " ");
+
+    public static double round3(double x) {
+        if (x < 0) {
+            return (int) (x * 1000 - 0.5) / 1000.0;
+        }
+        return (int) (x * 1000 + 0.5) / 1000.0;
+    }
+
+    // Print output
+
+    public static void printMatrix(Matrix m) {
+        int r = m.getRows();
+        int c = m.getCols();
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                System.out.printf(round3(m.getValue(i, j)) + " ");
             }
             System.out.println();
         }
+
+    }
+
+    // Operasi matriks
+
+    public static Matrix perkalianMatriks(Matrix m1, Matrix m2) {
+        Matrix returnM = new Matrix(m1.getRows(), m2.getCols());
+        double num = 0;
+
+        for (int i = 0; i < m1.getRows(); i++) {
+            for (int j = 0; j < m2.getCols(); j++) {
+                returnM.set(i, j, 0);
+                for (int k = 0; k < m1.getCols(); k++) {
+                    num += (m1.getValue(i, k) * m2.getValue(k, j));
+                }
+                returnM.set(i, j, num);
+                num = 0;
+            }
+        }
+
+        return returnM;
     }
 }
