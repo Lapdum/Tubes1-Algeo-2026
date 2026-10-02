@@ -1,7 +1,10 @@
 package algeo;
 
 import java.util.Scanner;
+
+import algeo.modules.CubicInterpolationHandler;
 import algeo.modules.InverseHandler;
+import algeo.modules.ModuleDeterminanHandler;
 import algeo.modules.PolyInterpolationHandler;
 
 public class Main {
@@ -41,7 +44,7 @@ public class Main {
                     System.out.println("Fitur SPL belum tersedia.");
                     break;
                 case 2:
-                    System.out.println("Fitur Determinan belum tersedia.");
+                    ModuleDeterminanHandler.run(sc);
                     break;
                 case 3:
                     InverseHandler.run(sc);
@@ -50,7 +53,7 @@ public class Main {
                     PolyInterpolationHandler.run(sc);
                     break;
                 case 5:
-                    System.out.println("Fitur Interpolasi Spline belum tersedia.");
+                    CubicInterpolationHandler.run(sc);
                     break;
                 case 6:
                     System.out.println("Fitur Regresi Linier belum tersedia.");
