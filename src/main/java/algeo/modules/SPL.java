@@ -6,11 +6,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SPL {
+
+    private static Scanner sc = new Scanner(System.in);
+
     public static void main(String[] args) {
         start();
     }
-
-    private static Scanner sc = new Scanner(System.in);
 
     private static void start() {
         System.out.println("Pilih metode input matriks augmented:");
@@ -66,8 +67,25 @@ public class SPL {
         System.out.println("Input matriks augmented:\n");
 
         Matrix m = Matrix.inputMatrix();
-
         printSPL(m);
+
+        System.out.println("\nPilih metode penyelesaian:");
+        System.out.println("1. Metode Eliminasi Gauss");
+        System.out.println("2. Metode Eliminasi Gauss-Jordan");
+        System.out.println("3. Metode Matriks Balikan");
+        System.out.println("4. Kaidah Cramer\n");
+
+        System.out.println("Testing Eliminasi Gauss!\n\n");
+        m = eliminasiGauss(m);
+        if (noSolution(m)) {
+            printSPL(m);
+            System.out.println("Sistem persamaan linear tidak memiliki solusi");
+        } else {
+            buildAnswer(m, substitusiMundur(m));
+            printSPL(m);
+            System.out.println();
+            printSolution(m.answerSPL);
+        }
 
     }
 
@@ -75,43 +93,273 @@ public class SPL {
         System.out.println("Silahkan masukkan nama file SPL:");
     }
 
-    private static void printSPL(Matrix matrix) {
-        int r = matrix.getRows();
-        int c = matrix.getCols();
+    private static boolean noSolution(Matrix m) {
+        int r = m.getRows();
+        int c = m.getCols();
 
-        System.out.println("Hasil SPL dari input:");
-
-        /* X1 + 2X2 + 3X3 = 4 */
         for (int i = 0; i < r; i++) {
-            for (int j = 0; j < c; j++) {
-                double num = matrix.getValue(i, j);
-                if (j != c - 1) {
-                    if (j != 0) {
-                        if (num > 0) {
-                            System.out.printf("+ ");
-                        } else if (num < 0) {
-                            System.out.printf("- ");
-                            num *= -1;
-                        } else {
-                            continue;
-                        }
-                    }
+            if (m.flag[i] && m.getValue(i, c) != 0) {
+                return true;
+            }
+        }
+ private static Matrix eliminasiGauss(Matrix m) {
+        int r = m.getRows();
+        int c = m.getCols();
+        int nVar = c - 1;
 
-                    if (num == (int) num) {
-                        if (num > 1) {
-                            System.out.printf(((int) num) + "X" + (j + 1) + " ");
-                        } else if ((int) num == 1) {
-                            System.out.printf("X" + (i + 1) + " ");
-                        }
-                    } else {
-                        System.out.printf(num + "X" + (i + 1) + " ");
+        System.out.println("Matriks Awal: ");
+        Matrix.printMatrix(m);
+        System.out.println();
+
+        int pivotRow = 0;
+
+        for (int i = 0; i < nVar && pivotRow < r; i++) {
+            int curr = pivotRow;
+            int curc = i;
+
+            int bestPivot = Matrix.partialPivoting(m, curr, curc);
+
+            if (bestPivot == -1) {
+                continue;
+            } else if (bestPivot != curr) {
+                m = Matrix.switchRow(m, curr, bestPivot);
+                System.out.println("After partial pivoting between row " + curr + " and row " + bestPivot + ":");
+                Matrix.printMatrix(m);
+                System.out.println();
+            }
+
+            double num = m.getValue(curr, curc);
+
+            // Normalize the row
+            if (num != 1) {
+                m = Matrix.multiplyRow(m, curr, 1 / (num));
+                num = m.getValue(curr, curc);
+            }
+
+            // Make row below collumn to zero
+            for (int j = curr + 1; j < r; j++) {
+                for (int k = curc; k < c; k++) {
+                    double multiplier = m.getValue(j, k);
+                    m = Matrix.subtractRowbyRow(m, j, curr, multiplier);
+                }
+            }
+
+            Matrix.cleanZeros(m);
+
+            for (int j = 0; j < c; j++) {
+                if (m.getValue(i, j) != 0) {
+                    m.isPivot[i][j] = true;
+                    m.isPivotCol[j] = true;
+                    break;
+                }
+            }
+            pivotRow++;
+        }
+
+        m = Matrix.moveZerosDown(m);
+
+        return m;
+    }
+        return false;
+    }
+
+    private static final String[] PARAM_NAMES = { "r", "s", "t", "u", "v", "w", "a", "b", "c", "d", "e" };
+
+    private static String paramName(int slot) {
+        if (slot <= PARAM_NAMES.length) {
+            return PARAM_NAMES[slot - 1];
+        }
+        return "t" + slot;
+    }
+
+    private static void buildAnswer(Matrix m, double[][] sol) {
+        int n = sol.length;
+        int k = sol[0].length - 1;
+
+        for (int i = 0; i < n; i++) {
+            String line = "X" + (i + 1) + " = ";
+            boolean first = true;
+
+            if (sol[i][0] != 0) {
+                double num = Matrix.round3(sol[i][0]);
+
+                if (num == (int) num) {
+                    line += "" + (int) num;
+                } else {
+                    line += "" + num;
+                }
+
+                first = false;
+            }
+
+            for (int j = 1; j <= k; j++) {
+                double coef = sol[i][j];
+                if (coef == 0) {
+                    continue;
+                }
+
+                if (first) {
+                    if (coef < 0) {
+                        line += "-";
                     }
                 } else {
+                    if (coef < 0) {
+                        line += " - ";
+                    } else {
+                        line += " + ";
+                    }
+                }
+
+                double mag;
+
+                if (coef < 0) {
+                    mag = -coef;
+                } else {
+                    mag = coef;
+                }
+
+                if (mag != 1) {
+                    double num = Matrix.round3(mag);
 
                     if (num == (int) num) {
-                        System.out.printf("= " + ((int) num));
+                        line += "" + (int) num;
                     } else {
-                        System.out.printf("= " + num);
+                        line += "" + num;
+                    }
+                }
+
+                line += paramName(j);
+                first = false;
+            }
+
+            if (first) {
+                line += "0";
+            }
+
+            m.answerSPL[i] = line;
+        }
+    }
+
+    private static double[][] substitusiMundur(Matrix m) {
+        int r = m.getRows();
+        int c = m.getCols() - 1;
+
+        int[] paramSlot = new int[c];
+        int k = 0;
+
+        for (int i = 0; i < c; i++) {
+            if (m.isPivotCol[i]) {
+                paramSlot[i] = -1;
+            } else {
+                m.freeVar = true;
+                k++;
+                paramSlot[i] = k;
+            }
+        }
+
+        double[][] sol = new double[c][k + 1];
+
+        for (int j = 0; j < c; j++) {
+            if (paramSlot[j] != -1) {
+                sol[j][paramSlot[j]] = 1.0;
+            }
+        }
+
+        for (int i = r - 1; i >= 0; i--) {
+            int p = -1;
+            for (int j = 0; j < c; j++) {
+                if (m.isPivot[i][j]) {
+                    p = j;
+                    break;
+                }
+            }
+            if (p == -1) {
+                continue;
+            }
+
+            sol[p][0] = m.getValue(i, c);
+
+            for (int j = p + 1; j < c; j++) {
+                double coef = m.getValue(i, j);
+                if (coef == 0) {
+                    continue;
+                }
+
+                for (int s = 0; s <= k; s++) {
+                    sol[p][s] -= coef * sol[j][s];
+                }
+            }
+
+            double pivotVal = m.getValue(i, p);
+            for (int s = 0; s <= k; s++) {
+                sol[p][s] /= pivotVal;
+            }
+
+            final double EPS = 1e-9;
+            for (int j = 0; j < c; j++) {
+                for (int s = 0; s <= k; s++) {
+
+                    if (sol[j][s] > -EPS && sol[j][s] < EPS) {
+                        sol[j][s] = 0.0;
+                    }
+                }
+            }
+        }
+
+        return sol;
+    }
+
+    private static void printSolution(String[] answerSPL) {
+        for (int i = 0; i < answerSPL.length - 1; i++) {
+            System.out.printf(answerSPL[i] + "; ");
+        }
+        System.out.println();
+    }
+
+    private static void printSPL(Matrix m) {
+        int r = m.getRows();
+        int c = m.getCols();
+
+        for (int i = 0; i < r; i++) {
+            boolean isFlag = m.flag[i];
+
+            if (isFlag) {
+                continue;
+            }
+            for (int j = 0; j < c; j++) {
+                double currNum = Matrix.round3(m.getValue(i, j));
+
+                if (currNum != 0 && j != c - 1) {
+                    if (j != 0 && currNum < 0) {
+                        currNum *= -1;
+                    }
+
+                    if (currNum != 1) {
+                        if (currNum == (int) currNum) {
+                            System.out.print((int) currNum);
+                        } else {
+                            System.out.print(currNum);
+                        }
+                    }
+
+                    System.out.printf("X" + (j + 1) + " ");
+
+                    if (j != c - 2) {
+                        double nextNum = m.getValue(i, j + 1);
+                        if (nextNum < 0) {
+                            System.out.printf("- ");
+                        } else {
+                            System.out.printf("+ ");
+                        }
+
+                    }
+
+                } else if (j == c - 1) {
+                    System.out.printf("= ");
+                    if (currNum == (int) currNum) {
+                        System.out.print((int) currNum);
+                    } else {
+                        System.out.print(currNum);
                     }
                 }
             }
