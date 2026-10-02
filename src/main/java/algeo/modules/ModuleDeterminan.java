@@ -1,16 +1,6 @@
 package algeo.modules;
 
-import algeo.modules.Matrix;
-
 public class ModuleDeterminan {
-
-    public static void jalanAres() {
-        // Matrix test = new Matrix(4, 4);
-        // test.data = new double[][] {{1, 8, 3, 10}, {4, 111, 6, 11}, {7, 8, 9, 12},
-        // {13, 14, 15, 16}};
-        // double det = ekspansiKofaktorKolom(1, test);
-        // System.out.println(det);
-    }
 
     public static Double ekspansiKofaktorKolom(int x, Matrix matrix) { // kolom ke-x
         if (matrix.rows != matrix.cols) {

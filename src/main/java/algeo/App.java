@@ -1,6 +1,7 @@
 package algeo;
 
 import algeo.modules.ModuleContoh;
+import algeo.modules.ModuleDeterminan;
 
 public class App {
     public static void main(String[] args) {
