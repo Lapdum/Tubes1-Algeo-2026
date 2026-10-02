@@ -108,7 +108,7 @@ public class PolyInterpolationHandler {
         } catch (NumberFormatException e) {
 
             System.out.println(
-                "Format angka pada input tidak valid."
+                "Input tidak valid, gunakan format angka yang benar."
             );
             return;
 

@@ -77,8 +77,17 @@ public class Inverse {
           
             //pivot
             double pivot = augmented.getValue(i, i);
-            if (pivot == 0) {
-                throw new IllegalArgumentException("Matriks tidak memiliki balikan");
+            double absPivot;
+            if (pivot < 0) {
+                absPivot = -pivot;
+            } else {
+                absPivot = pivot;
+            }
+
+            if (absPivot < 1e-9) {
+                throw new IllegalArgumentException(
+                    "Matriks tidak memiliki balikan"
+                );
             }
             Matrix.multiplyRow(augmented, i, 1.0/pivot); //sebaris dibagi 1/pivot
             System.out.println();
