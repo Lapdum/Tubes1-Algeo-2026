@@ -1,19 +1,48 @@
 === Interpolasi Polinom ===
 
 Data titik:
-(1, 2)
-(3, 4)
+(2, 3)
+(5, 6)
 
-Nilai x = 6
+Nilai x = 3
 
 Perhitungan interpolasi:
-x yang dicari = 6.0
+metode : Interpolasi Polinomial dengan Eliminasi Gauss
 
-L0(x) = (x - 3.0) / (1.0 - 3.0)
-L1(x) = (x - 1.0) / (3.0 - 1.0)
+Derajat polinom = 1
 
-P(x) = 2.0L0(x) + 4.0L1(x)
-P(6.0) = 7.0
+Bentuk umum polinom: 
+P(x) = a0 + a1x
 
-Nilai interpolasi pada x = 6
-f(6) = 7
+Membentuk SPL dari titik data:
+P(2.0) = 3.0
+P(5.0) = 6.0
+
+Matriks augmented:
+1 2 | 3
+1 5 | 6
+Matriks Awal: 
+1.0 2.0 3.0 
+1.0 5.0 6.0 
+
+After subtracting row 2 with row 1 multiplied by 1.0:
+1.0 2.0 3.0 
+0.0 3.0 3.0 
+
+After normalizing row 2:
+1.0 2.0 3.0 
+0.0 1.0 1.0 
+
+
+Koefisien:
+a0 = 1
+a1 = 1
+
+Persamaan interpolasi:
+P(x) = 1x + 1
+
+Nilai x = 3
+P(3) = 4
+
+Nilai interpolasi pada x = 3
+f(3) = 4

@@ -151,13 +151,7 @@ public class PolyInterpolationHandler {
 
         System.out.println("Data titik:");
         for (int i = 0; i < data.getRows(); i++) {
-            System.out.println(
-                "("
-                + formatNumber(data.getValue(i, 0))
-                + ", "
-                + formatNumber(data.getValue(i, 1))
-                + ")"
-            );
+            System.out.println( "(" + formatNumber(data.getValue(i, 0)) + ", " + formatNumber(data.getValue(i, 1)) + ")");
         }
 
         System.out.println();
@@ -169,19 +163,16 @@ public class PolyInterpolationHandler {
         System.out.println();
         System.out.println("Perhitungan interpolasi:");
 
-        PolynomialInterpolation.printSteps(data, x);
 
-        hasil = PolynomialInterpolation.interpolatePoly(data, x);
+       hasil = PolynomialInterpolation.printSteps(data, x);
 
         System.out.println();
         System.out.println(
-            "Nilai interpolasi pada x = "
-            + formatNumber(x)
+            "Nilai interpolasi pada x = " + formatNumber(x)
         );
 
         System.out.println(
-            "f(" + formatNumber(x) + ") = "
-            + formatNumber(hasil)
+            "f(" + formatNumber(x) + ") = " + formatNumber(hasil)
         );
 
         } finally {

@@ -715,4 +715,22 @@ public class SPL {
             System.out.println();
         }
     }
+    public static double[] solveForInterpolation(Matrix m) {
+
+        m = eliminasiGauss(m);
+        if (noSolution(m)) {
+            throw new IllegalArgumentException(
+                "Sistem interpolasi tidak memiliki solusi."
+            );
+        }
+
+        double[][] solution = substitusiMundur(m);
+        double[] coefficients =
+            new double[m.getCols() - 1];
+
+        for (int i = 0; i < coefficients.length; i++) {
+            coefficients[i] = solution[i][0];
+        }
+        return coefficients;
+    }
 }
