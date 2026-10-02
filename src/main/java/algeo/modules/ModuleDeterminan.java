@@ -1,4 +1,4 @@
-package algeo.modules;
+package algeo.modules; 
 
 import algeo.modules.Matrix;
 
