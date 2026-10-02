@@ -62,6 +62,8 @@ public class InverseHandler {
                 System.out.println("Tekan Enter kosong untuk selesai.");
 
                 matrix = Matrix.inputMatrix();
+                if (matrix.getRows() != matrix.getCols()) {
+                throw new IllegalArgumentException("Matriks harus berupa matriks persegi untuk mencari invers.");}
 
             } else {
 
@@ -89,7 +91,6 @@ public class InverseHandler {
             return;
         }
 
-
         /*
          * Menjalankan algoritma sambil menyimpan output langkah
          * ke dalam String.
@@ -98,8 +99,7 @@ public class InverseHandler {
 
         try {
 
-            java.io.ByteArrayOutputStream output =
-                new java.io.ByteArrayOutputStream();
+            java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
 
             java.io.PrintStream originalOut = System.out;
 
@@ -168,7 +168,7 @@ public class InverseHandler {
             System.out.println();
             System.out.println("Matriks Inverse:");
 
-        
+
 
             for (int i = 0; i < inverse.getRows(); i++) {
 
@@ -183,8 +183,7 @@ public class InverseHandler {
                     String formatted = df.format(value);
 
                     System.out.print(
-                        String.format("%8s ", formatted)
-                    );
+                            String.format("%8s ", formatted));
 
                     hasilOutput += formatted;
 
@@ -203,8 +202,6 @@ public class InverseHandler {
             return;
         }
 
-
-
         System.out.println();
         System.out.print("Masukkan nama/path file output: ");
 
@@ -215,23 +212,19 @@ public class InverseHandler {
             writeOutputToFile(outputFilename, hasilOutput);
 
             System.out.println(
-                "Hasil berhasil disimpan ke: " + outputFilename
-            );
+                    "Hasil berhasil disimpan ke: " + outputFilename);
 
         } catch (IOException e) {
 
             System.out.println(
-                "Gagal menyimpan file: " + e.getMessage()
-            );
+                    "Gagal menyimpan file: " + e.getMessage());
         }
     }
-
 
     private static Matrix readMatrixFromFile(String filename)
             throws IOException {
 
-        BufferedReader reader =
-            new BufferedReader(new FileReader(filename));
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
 
         String line;
 
@@ -252,8 +245,7 @@ public class InverseHandler {
             if (rows >= 1001) {
                 reader.close();
                 throw new IllegalArgumentException(
-                    "Ukuran matriks melebihi batas 1001 baris."
-                );
+                        "Ukuran matriks melebihi batas 1001 baris.");
             }
 
             line = line.replace(",", ".");
@@ -266,8 +258,7 @@ public class InverseHandler {
                 if (cols > 1001) {
                     reader.close();
                     throw new IllegalArgumentException(
-                        "Ukuran matriks melebihi batas 1001 kolom."
-                    );
+                            "Ukuran matriks melebihi batas 1001 kolom.");
                 }
 
             } else if (tokens.length != cols) {
@@ -275,10 +266,8 @@ public class InverseHandler {
                 reader.close();
 
                 throw new IllegalArgumentException(
-                    "Jumlah kolom pada setiap baris harus sama."
-                );
+                        "Jumlah kolom pada setiap baris harus sama.");
             }
-
 
             for (int j = 0; j < tokens.length; j++) {
 
@@ -292,31 +281,25 @@ public class InverseHandler {
                         reader.close();
 
                         throw new NumberFormatException(
-                            "Format pecahan tidak valid: " + token
-                        );
+                                "Format pecahan tidak valid: " + token);
                     }
 
-                    double numerator =
-                        Double.parseDouble(fraction[0]);
+                    double numerator = Double.parseDouble(fraction[0]);
 
-                    double denominator =
-                        Double.parseDouble(fraction[1]);
+                    double denominator = Double.parseDouble(fraction[1]);
 
                     if (denominator == 0) {
                         reader.close();
 
                         throw new IllegalArgumentException(
-                            "Penyebut tidak boleh 0."
-                        );
+                                "Penyebut tidak boleh 0.");
                     }
 
-                    temp[rows][j] =
-                        numerator / denominator;
+                    temp[rows][j] = numerator / denominator;
 
                 } else {
 
-                    temp[rows][j] =
-                        Double.parseDouble(token);
+                    temp[rows][j] = Double.parseDouble(token);
                 }
             }
 
@@ -325,13 +308,10 @@ public class InverseHandler {
 
         reader.close();
 
-
         if (rows == 0 || cols == -1) {
             throw new IllegalArgumentException(
-                "File tidak berisi matriks."
-            );
+                    "File tidak berisi matriks.");
         }
-
 
         Matrix matrix = new Matrix(rows, cols);
 
@@ -340,26 +320,22 @@ public class InverseHandler {
             for (int j = 0; j < cols; j++) {
 
                 matrix.set(
-                    i,
-                    j,
-                    temp[i][j]
-                );
+                        i,
+                        j,
+                        temp[i][j]);
             }
         }
 
         return matrix;
     }
 
-
     private static void writeOutputToFile(
             String filename,
             String output)
             throws IOException {
 
-        PrintWriter writer =
-            new PrintWriter(
-                new FileWriter(filename)
-            );
+        PrintWriter writer = new PrintWriter(
+                new FileWriter(filename));
 
         writer.print(output);
 
