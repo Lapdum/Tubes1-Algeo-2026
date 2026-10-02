@@ -4,19 +4,15 @@ import java.util.*;
 
 public class SPL {
 
-    private static Scanner sc = new Scanner(System.in);
+    public static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        start();
-    }
+        int inputMethod = 0;
+        boolean inputValidation = true;
 
-    private static void start() {
         System.out.println("Pilih metode input matriks augmented:");
         System.out.println("1. Input manual");
         System.out.println("2. Input file");
-
-        boolean inputValidation = true;
-        int inputMethod = 0;
 
         while (inputValidation) {
             try {
@@ -45,6 +41,9 @@ public class SPL {
     }
 
     private static void manual() {
+        int inputMethod;
+        Matrix m;
+
         System.out.println("---------------------------------");
         System.out.println("|     Sistem Persamaan Linear    |");
         System.out.println("---------------------------------");
@@ -63,138 +62,38 @@ public class SPL {
 
         System.out.println("Input matriks augmented:\n");
 
-        Matrix m = Matrix.inputMatrix();
+        m = Matrix.inputMatrix();
         printSPL(m);
 
-        System.out.println("\nPilih metode penyelesaian:");
-        System.out.println("1. Metode Eliminasi Gauss");
-        System.out.println("2. Metode Eliminasi Gauss-Jordan");
-        System.out.println("3. Metode Matriks Balikan");
-        System.out.println("4. Kaidah Cramer\n");
-
-        boolean inputValidation = true;
-        int inputMethod = 0;
-
-        while (inputValidation) {
-            try {
-                System.out.println("Metode penyelesaian yang dipilih:");
-                inputMethod = sc.nextInt();
-
-                if ((inputMethod == 1) || (inputMethod == 2) || (inputMethod == 3) || inputMethod == 4) {
-                    inputValidation = false;
-                } else {
-                    System.out.println("Input angka tidak ada pada opsi!");
-
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Input harus berupa angka!");
-                sc.next();
-            }
-
-            sc.nextLine();
-
-            if (inputMethod == 1) {
-                m = eliminasiGauss(m);
-
-                if (noSolution(m)) {
-                    printSPL(m);
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear tidak memiliki solusi");
-                } else {
-                    buildAnswer(m, substitusiMundur(m));
-                    printSPL(m);
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear memiliki solusi:");
-                    printSolution(m.answerSPL);
-                }
-            } else if (inputMethod == 2) {
-                m = eliminasiGaussJordan(m);
-
-                if (noSolution(m)) {
-                    printSPL(m);
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear tidak memiliki solusi");
-                } else {
-                    buildAnswer(m, substitusiMundur(m));
-                    printSPL(m);
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear memiliki solusi:");
-                    printSolution(m.answerSPL);
-                }
-            } else if (inputMethod == 3) {
-                int rInitial = m.getRows();
-                int cInitial = m.getCols();
-
-                double[][] result = new double[rInitial][1];
-
-                for (int i = 0; i < m.getRows(); i++) {
-                    result[i][0] = m.getValue(i, m.getCols() - 1);
-                }
-                m = eliminasiInverse(m);
-
-                boolean isInverse = true;
-                for (int i = 0; i < rInitial; i++) {
-                    if (m.flag[i]) {
-                        isInverse = false;
-                    }
-                }
-
-                if (isInverse == false || m.getCols() == cInitial) {
-                    System.out.println("Metode inverse tidak dapat digunakan karena sistem tidak memiliki balikan!");
-                } else {
-                    double[][] inverseM = new double[rInitial][cInitial - 1];
-                    Matrix n = new Matrix(m.getRows(), 1);
-                    Matrix res = new Matrix(m.getRows(), 1);
-
-                    int cntCols = cInitial - 1;
-                    for (int i = 0; i < rInitial; i++) {
-                        for (int j = 0; j < cInitial - 1; j++) {
-                            inverseM[i][j] = m.getValue(i, j + cntCols);
-                        }
-                    }
-
-                    m = Matrix.doubletoMatrix(inverseM, rInitial, cInitial - 1);
-                    n = Matrix.doubletoMatrix(result, m.getRows(), 1);
-                    res = Matrix.perkalianMatriks(m, n);
-
-                    for (int i = 0; i < m.getRows(); i++) {
-                        result[i][0] = res.getValue(i, 0);
-                    }
-
-                    buildAnswer(m, result);
-                    System.out.println("Sistem persamaan linear memiliki solusi:");
-                    printSolution(m.answerSPL);
-                }
-            } else {
-                m = kaidahCramer(m);
-
-                buildAnswer(m, m.determinantCramer);
-                System.out.println("Sistem persamaan linear memiliki solusi:");
-                printSolution(m.answerSPL);
-            }
-
-        }
-
+        inputMethod = chooseMethod();
+        methods(inputMethod, m);
     }
 
     private static void fileInput() {
+        int inputMethod;
+        Matrix m;
+
         System.out.println("---------------------------------");
         System.out.println("|     Sistem Persamaan Linear    |");
         System.out.println("---------------------------------");
         System.out.println();
 
-        Matrix m = Matrix.inputFileMatrix();
-
+        m = Matrix.inputFileMatrix();
         printSPL(m);
+
+        inputMethod = chooseMethod();
+        methods(inputMethod, m);
+    }
+
+    private static int chooseMethod() {
+        int inputMethod = 0;
+        boolean inputValidation = true;
 
         System.out.println("\nPilih metode penyelesaian:");
         System.out.println("1. Metode Eliminasi Gauss");
         System.out.println("2. Metode Eliminasi Gauss-Jordan");
         System.out.println("3. Metode Matriks Balikan");
         System.out.println("4. Kaidah Cramer\n");
-
-        boolean inputValidation = true;
-        int inputMethod = 0;
 
         while (inputValidation) {
             try {
@@ -214,87 +113,98 @@ public class SPL {
 
             sc.nextLine();
 
-            if (inputMethod == 1) {
-                m = eliminasiGauss(m);
+        }
+        return inputMethod;
+    }
 
-                if (noSolution(m)) {
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear tidak memiliki solusi");
-                } else {
-                    buildAnswer(m, substitusiMundur(m));
-                    printSPL(m);
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear memiliki solusi:");
-                    printSolution(m.answerSPL);
-                }
-            } else if (inputMethod == 2) {
-                m = eliminasiGaussJordan(m);
+    private static void methods(int inputMethod, Matrix m) {
+        if (inputMethod == 1) {
+            m = eliminasiGauss(m);
 
-                if (noSolution(m)) {
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear tidak memiliki solusi");
-                } else {
-                    buildAnswer(m, substitusiMundur(m));
-                    printSPL(m);
-                    System.out.println();
-                    System.out.println("Sistem persamaan linear memiliki solusi:");
-                    printSolution(m.answerSPL);
-                }
-            } else if (inputMethod == 3) {
-                int rInitial = m.getRows();
-                int cInitial = m.getCols();
-
-                double[][] result = new double[rInitial][1];
-
-                for (int i = 0; i < m.getRows(); i++) {
-                    result[i][0] = m.getValue(i, m.getCols() - 1);
-                }
-                m = eliminasiInverse(m);
-
-                boolean isInverse = true;
-                for (int i = 0; i < rInitial; i++) {
-                    if (m.flag[i]) {
-                        isInverse = false;
-                    }
-                }
-
-                if (isInverse == false || m.getCols() == cInitial) {
-                    System.out.println("Metode inverse tidak dapat digunakan karena sistem tidak memiliki balikan!");
-                } else {
-                    double[][] inverseM = new double[rInitial][cInitial - 1];
-                    Matrix n = new Matrix(m.getRows(), 1);
-                    Matrix res = new Matrix(m.getRows(), 1);
-
-                    int cntCols = cInitial - 1;
-                    for (int i = 0; i < rInitial; i++) {
-                        for (int j = 0; j < cInitial - 1; j++) {
-                            inverseM[i][j] = m.getValue(i, j + cntCols);
-                        }
-                    }
-
-                    m = Matrix.doubletoMatrix(inverseM, rInitial, cInitial - 1);
-                    n = Matrix.doubletoMatrix(result, m.getRows(), 1);
-                    res = Matrix.perkalianMatriks(m, n);
-
-                    for (int i = 0; i < m.getRows(); i++) {
-                        result[i][0] = res.getValue(i, 0);
-                    }
-
-                    buildAnswer(m, result);
-                    System.out.println("Sistem persamaan linear memiliki solusi:");
-                    printSolution(m.answerSPL);
-                }
+            if (noSolution(m)) {
+                printSPL(m);
+                System.out.println();
+                System.out.println("Sistem persamaan linear tidak memiliki solusi");
             } else {
-                m = kaidahCramer(m);
-
-                buildAnswer(m, m.determinantCramer);
+                buildAnswer(m, substitusiMundur(m));
+                printSPL(m);
+                System.out.println();
                 System.out.println("Sistem persamaan linear memiliki solusi:");
                 printSolution(m.answerSPL);
             }
+        } else if (inputMethod == 2) {
+            m = eliminasiGaussJordan(m);
+
+            if (noSolution(m)) {
+                printSPL(m);
+                System.out.println();
+                System.out.println("Sistem persamaan linear tidak memiliki solusi");
+            } else {
+                buildAnswer(m, substitusiMundur(m));
+                printSPL(m);
+                System.out.println();
+                System.out.println("Sistem persamaan linear memiliki solusi:");
+                printSolution(m.answerSPL);
+            }
+        } else if (inputMethod == 3) {
+            int rInitial, cInitial, cntCols;
+            double[][] result, inverseM;
+            Matrix mInverse, n, res;
+            boolean isInverse;
+
+            rInitial = m.getRows();
+            cInitial = m.getCols();
+            cntCols = cInitial - 1;
+
+            result = new double[rInitial][1];
+            inverseM = new double[rInitial][cInitial - 1];
+
+            mInverse = eliminasiInverse(m);
+
+            isInverse = true;
+
+            for (int i = 0; i < rInitial; i++) {
+                if (mInverse.flag[i]) {
+                    isInverse = false;
+                }
+            }
+
+            if (isInverse == false || mInverse.getCols() == cInitial) {
+                System.out.println("Metode inverse tidak dapat digunakan karena sistem tidak memiliki balikan!");
+            } else {
+                for (int i = 0; i < m.getRows(); i++) {
+                    result[i][0] = m.getValue(i, m.getCols() - 1);
+                }
+
+                for (int i = 0; i < rInitial; i++) {
+                    for (int j = 0; j < cInitial - 1; j++) {
+                        inverseM[i][j] = m.getValue(i, j + cntCols);
+                    }
+                }
+
+                mInverse = Matrix.doubletoMatrix(inverseM, rInitial, cInitial - 1);
+                n = Matrix.doubletoMatrix(result, mInverse.getRows(), 1);
+                res = Matrix.perkalianMatriks(mInverse, n);
+
+                for (int i = 0; i < m.getRows(); i++) {
+                    result[i][0] = res.getValue(i, 0);
+                }
+
+                buildAnswer(mInverse, result);
+                System.out.println("Sistem persamaan linear memiliki solusi:");
+                printSolution(mInverse.answerSPL);
+            }
+        } else {
+            m = kaidahCramer(m);
+
+            buildAnswer(m, m.determinantCramer);
+            System.out.println("Sistem persamaan linear memiliki solusi:");
+            printSolution(m.answerSPL);
         }
+
     }
 
-    private static boolean noSolution(Matrix m) {
+    public static boolean noSolution(Matrix m) {
         int r = m.getRows();
         int c = m.getCols();
 
@@ -306,16 +216,15 @@ public class SPL {
         return false;
     }
 
-    private static Matrix eliminasiGauss(Matrix m) {
+    public static Matrix eliminasiGauss(Matrix m) {
         int r = m.getRows();
         int c = m.getCols();
         int nVar = c - 1;
+        int pivotRow = 0;
 
         System.out.println("Matriks Awal: ");
         Matrix.printMatrix(m);
         System.out.println();
-
-        int pivotRow = 0;
 
         for (int i = 0; i < nVar && pivotRow < r; i++) {
             int curr = pivotRow;
@@ -378,13 +287,11 @@ public class SPL {
         return m;
     }
 
-    private static Matrix eliminasiGaussJordan(Matrix m) {
-        m = eliminasiGauss(m);
-
-        System.out.println("Starting jordan elimination:");
-
+    public static Matrix eliminasiGaussJordan(Matrix m) {
         int r = m.getRows();
         int c = m.getCols();
+
+        m = eliminasiGauss(m);
 
         for (int i = r - 1; i >= 0; i--) {
             for (int j = 0; j < c - 1; j++) {
@@ -403,27 +310,25 @@ public class SPL {
                 }
             }
         }
-
+        m = Matrix.cleanZeros(m);
         return m;
     }
 
-    private static Matrix eliminasiInverse(Matrix m) {
+    public static Matrix eliminasiInverse(Matrix m) {
         int r = m.getRows();
         int c = m.getCols();
-
-        if (r != c - 1) {
-            return m;
-        }
-
+        int zeroC = c - 1;
         double[][] currM = new double[r][c + 2];
 
+        if (r != zeroC) {
+            return m;
+        }
         for (int i = 0; i < r; i++) {
             for (int j = 0; j < c - 1; j++) {
                 currM[i][j] = m.getValue(i, j);
             }
         }
 
-        int zeroC = c - 1;
         for (int i = 0; i < r; i++) {
             for (int j = c - 1; j < c + 2; j++) {
                 if (zeroC == j) {
@@ -436,10 +341,9 @@ public class SPL {
         }
 
         m = Matrix.doubletoMatrix(currM, r, c + 2);
-
         m = eliminasiGaussJordan(m);
-
         m = Matrix.moveZerosDown(m);
+
         for (int i = 0; i < r; i++) {
             boolean isZero = true;
             for (int j = 0; j < c - 1; j++) {
@@ -453,13 +357,12 @@ public class SPL {
         return m;
     }
 
-    private static Matrix kaidahCramer(Matrix m) {
+    public static Matrix kaidahCramer(Matrix m) {
         int r = m.getRows();
         int c = m.getCols();
-
-        Matrix b = new Matrix(r, 1);
-        Matrix aInitial = new Matrix(r, c - 1);
-        Matrix aModified = new Matrix(r, c - 1);
+        Matrix b;
+        Matrix aInitial;
+        Matrix aModified;
 
         // Fill A and b
 
@@ -506,16 +409,16 @@ public class SPL {
         return m;
     }
 
-    private static final String[] PARAM_NAMES = { "r", "s", "t", "u", "v", "w", "a", "b", "c", "d", "e" };
+    public static final String[] PARAM_NAMES = { "r", "s", "t", "u", "v", "w", "a", "b", "c", "d", "e" };
 
-    private static String paramName(int slot) {
+    public static String paramName(int slot) {
         if (slot <= PARAM_NAMES.length) {
             return PARAM_NAMES[slot - 1];
         }
         return "t" + slot;
     }
 
-    private static void buildAnswer(Matrix m, double[][] sol) {
+    public static void buildAnswer(Matrix m, double[][] sol) {
         int n = sol.length;
         int k = sol[0].length - 1;
 
@@ -583,7 +486,7 @@ public class SPL {
         }
     }
 
-    private static double[][] substitusiMundur(Matrix m) {
+    public static double[][] substitusiMundur(Matrix m) {
         int r = m.getRows();
         int c = m.getCols() - 1;
 
@@ -653,7 +556,7 @@ public class SPL {
         return sol;
     }
 
-    private static void printSolution(String[] answerSPL) {
+    public static void printSolution(String[] answerSPL) {
         for (int i = 0; i < answerSPL.length; i++) {
             if (answerSPL[i] != null) {
                 if (i != answerSPL.length - 1) {
@@ -666,7 +569,7 @@ public class SPL {
         System.out.println();
     }
 
-    private static void printSPL(Matrix m) {
+    public static void printSPL(Matrix m) {
         int r = m.getRows();
         int c = m.getCols();
 

@@ -419,6 +419,7 @@ public class Matrix {
             for (int j = 0; j < c; j++) {
                 System.out.printf(round3(m.getValue(i, j)) + " ");
             }
+            System.out.println();
         }
     }
 
@@ -443,6 +444,20 @@ public class Matrix {
 
     }
 
+    public static Matrix transposeMatrix(Matrix m) {
+        int r = m.getRows();
+        int c = m.getCols();
+        Matrix transposeM = new Matrix(c, r);
+
+        for (int i = 0; i < c; i++) {
+            for (int j = 0; j < r; j++) {
+                transposeM.set(i, j, m.getValue(j, i));
+            }
+        }
+
+        return transposeM;
+    }
+
     // Operasi matriks
 
     public static Matrix perkalianMatriks(Matrix m1, Matrix m2) {
@@ -461,5 +476,15 @@ public class Matrix {
         }
 
         return returnM;
+    }
+
+    // Operasi bilangan
+
+    public static double power(double a, double n) { // a to the power of n
+        if (n == 0) {
+            return 1;
+        } else {
+            return a * power(a, (n - 1));
+        }
     }
 }

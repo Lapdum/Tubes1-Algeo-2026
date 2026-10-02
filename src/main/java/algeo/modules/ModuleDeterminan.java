@@ -1,7 +1,5 @@
 package algeo.modules;
 
-import algeo.modules.Matrix;
-
 public class ModuleDeterminan {
 
     public static void jalanAres() {
@@ -100,5 +98,5 @@ public class ModuleDeterminan {
         return Math.pow(-1, countSwitch) * valueDiagonal;
     }
 
-    //test
+    // test
 }
