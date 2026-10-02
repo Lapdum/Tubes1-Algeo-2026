@@ -378,7 +378,7 @@ public class SPL {
         return m;
     }
 
-    private static Matrix eliminasiGaussJordan(Matrix m) {
+    public static Matrix eliminasiGaussJordan(Matrix m) {
         m = eliminasiGauss(m);
 
         System.out.println("Starting jordan elimination:");
