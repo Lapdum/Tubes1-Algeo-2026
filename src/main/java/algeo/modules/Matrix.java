@@ -1,5 +1,7 @@
 package algeo.modules;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.io.*;
 import java.text.*;
@@ -203,18 +205,55 @@ public class Matrix {
 
     // Operasi Baris Elementer
 
-    public static int partialPivoting(Matrix m, int r, int c) {
-        double mx = 1e-9;
-        int pos = -1;
-        for (int i = r; i < m.getRows(); i++) {
-            double num = absolute(m.getValue(i, c));
-            if (num > mx) {
-                mx = num;
-                pos = i;
+    public static int partialPivoting(Matrix m, int pivotRow, int col) {
+
+        int position = pivotRow;
+
+        double max = m.getValue(pivotRow, col);
+
+        if (max < 0) {
+            max = -max;
+        }
+
+        for (int i = pivotRow + 1; i < m.getRows(); i++) {
+
+            double value = m.getValue(i, col);
+
+            double absValue;
+
+            if (value < 0) {
+                absValue = -value;
+            } else {
+                absValue = value;
+            }
+
+            if (absValue > max) {
+                max = absValue;
+                position = i;
             }
         }
 
-        return pos;
+        if (position != pivotRow) {
+
+            for (int j = 0; j < m.getCols(); j++) {
+
+                double temp = m.getValue(pivotRow, j);
+
+                m.set(
+                    pivotRow,
+                    j,
+                    m.getValue(position, j)
+                );
+
+                m.set(
+                    position,
+                    j,
+                    temp
+                );
+            }
+        }
+
+        return position;
     }
 
     public static Matrix round3All(Matrix m) {
@@ -322,7 +361,26 @@ public class Matrix {
 
         return m;
     }
+    public void printMatrix(){
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("0.###", symbols);
 
+        for (int i = 0; i<rows; i++) {
+            for(int j = 0; j< cols; j++) {
+                double value = data[i][j];
+
+                if(value == 0) {
+                    value = 0;
+                }
+                System.out.print(df.format(value));
+                if(j< cols-1) {
+                    System.out.print(" ");
+                }
+            }
+        }
+    }
+    
+    
     public static double round3(double x) {
         if (x < 0) {
             return (int) (x * 1000 - 0.5) / 1000.0;
@@ -347,26 +405,7 @@ public class Matrix {
         System.out.println(matrixToString(m));
     }
 
-    public void printMatrix() {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("0.###", symbols);
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                double value = data[i][j];
-
-                if (value == 0) {
-                    value = 0;
-                }
-                System.out.print(df.format(value));
-                if (j < cols - 1) {
-                    System.out.print(" ");
-                }
-            }
-            System.out.println();
-        }
-
-    }
+   
 
     public static Matrix transposeMatrix(Matrix m) {
         int r = m.getRows();

@@ -2,161 +2,149 @@ package algeo.modules;
 
 public class PolynomialInterpolation {
     public static double interpolatePoly(Matrix data, double x){
-        if (hasDuplicateX(data)) {
-        throw new IllegalArgumentException("Nilai x tidak boleh sama.");}
-        
-        int n = data.getRows(); //ambil jml titik
-        double hasil = 0; 
-        for(int i=0; i<n;i++){
-            double li = 1; //nyimpen li(x)
-            for(int j=0;j<n;j++){
-                if(i !=j){
-                    double xi = data.getValue(i, 0);
-                    double xj = data.getValue(j, 0);
-                    li = li*(x - xj)/(xi - xj);
-                }
-            }
-            double yi = data.getValue(i, 1);
-            hasil = hasil + yi*li;
-        }
-        return hasil;
+       double[] coefficients = getPolynomialCoefficients(data);
+       double hasil = 0;
+       double power = 1;
+       for(int i =0; i< coefficients.length; i++){
+        hasil += coefficients[i]*power;
+        power *= x;
+       }
+       return hasil;
+
     }
 
 
-
-    public static void printSteps(Matrix data, double x) {
+    public static double printSteps(Matrix data, double x) {
         int n = data.getRows();
-
-        System.out.println("x yang dicari = " + x);
+        System.out.println( "metode : Interpolasi Polinomial dengan Eliminasi Gauss");
+        System.out.println();
+        System.out.println("Derajat polinom = " + (n-1));
         System.out.println();
 
-        for (int i = 0; i < n; i++) {
+        System.out.println("Bentuk umum polinom: ");
+        System.out.print("P(x) = a0");
 
-            System.out.print("L" + i + "(x) = ");
-            boolean first = true;
-
-            for (int j = 0; j < n; j++) {
-
-                if (i != j) {
-                    double xi = data.getValue(i, 0);
-                    double xj = data.getValue(j, 0);
-
-                    if (!first) {
-                        System.out.print(" * ");
-                    }
-                System.out.print(
-                    "(x - " + xj + ") / (" + xi + " - " + xj + ")");
-                    first = false;
-                }
+        for(int i = 1; i<n; i++){
+            System.out.print(" + a"+ i +"x");
+            if(i>1){
+                System.out.print("^"+i);
             }
-
-                System.out.println();
         }
 
+
         System.out.println();
-        System.out.print("P(x) = ");
+
+        System.out.println();
+
+        System.out.println("Membentuk SPL dari titik data:");
 
         for (int i = 0; i < n; i++) {
-
+            double xi = data.getValue(i, 0);
             double yi = data.getValue(i, 1);
-            if (i > 0) {
-                System.out.print(" + ");
-            }
 
-            System.out.print(yi + "L" + i + "(x)");
+            System.out.println(
+                "P(" + xi + ") = " + yi
+            );
         }
-            System.out.println();
-            double hasil = interpolatePoly(data, x);
-            System.out.println("P(" + x + ") = " + hasil);
+
+        Matrix augmented = buildInterpolationMatrix(data);
+
+        System.out.println();
+
+        System.out.println("Matriks augmented:");
+
+        printAugmented(augmented);
+
+        double[] coefficients = SPL.solveForInterpolation(augmented);
+        System.out.println();
+        System.out.println("Koefisien:");
+        for (int i = 0; i < coefficients.length; i++) {
+            System.out.println("a" + i + " = " + formatNumber(coefficients[i]));
+        }
+
+        System.out.println();
+        System.out.println("Persamaan interpolasi:");
+        printPolynomial(coefficients);
+        System.out.println();
+        double hasil =
+            evaluate(coefficients, x);
+
+
+        return hasil;
     }
     
 
 
 
-    private static double[] multiplyPolynomial(double[] a, double[] b) {
+    public static double[] getPolynomialCoefficients(Matrix data) { 
+        int n = data.getRows();
+        Matrix augmented = buildInterpolationMatrix(data); 
+        return SPL.solveForInterpolation(augmented);
 
-        double[] hasil = new double[a.length + b.length - 1];
 
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < b.length; j++) {
-                hasil[i + j] = hasil[i + j] + a[i] * b[j];
-            }
-        }
-
-        return hasil;
     }
 
 
-
-    public static double[] getPolynomialCoefficients(Matrix data) {
-
+    private static Matrix buildInterpolationMatrix(Matrix data) {
         int n = data.getRows();
 
-        double[] coefficients = new double[n];
+        Matrix augmented =
+            new Matrix(n, n + 1);
 
         for (int i = 0; i < n; i++) {
-
-            double xi = data.getValue(i, 0);
-            double yi = data.getValue(i, 1);
-
-            double[] basis = {1};
-            double denominator = 1;
+            double x = data.getValue(i, 0);
+            double y = data.getValue(i, 1);
+            double power = 1;
 
             for (int j = 0; j < n; j++) {
-
-                if (i != j) {
-
-                    double xj = data.getValue(j, 0);
-
-                    double[] factor = {-xj, 1};
-
-                    basis = multiplyPolynomial(basis, factor);
-
-                    denominator = denominator * (xi - xj);
-                }
+                augmented.set(i, j, power);
+                power *= x;
             }
-
-            double multiplier = yi / denominator;
-
-            for (int k = 0; k < basis.length; k++) {
-                coefficients[k] =
-                    coefficients[k] + multiplier * basis[k];
-            }
+            augmented.set(i, n, y);
         }
-
-        return coefficients;
+        return augmented;
     }
 
 
 
-    public static void printPolynomial(Matrix data) {
-
-        double[] coefficients = getPolynomialCoefficients(data);
+    public static void printPolynomial(double[] coefficients) {
 
         System.out.print("P(x) = ");
+        boolean first = true;
 
         for (int i = coefficients.length - 1; i >= 0; i--) {
 
             double value = coefficients[i];
-
             if (value == 0) {
-                continue;
-            }
+                continue;}
 
-            if (i != coefficients.length - 1 && value > 0) {
-                System.out.print(" + ");
+            if (!first) {
+                if (value >= 0) {
+                    System.out.print(" + ");
+                } else {
+                    System.out.print(" - ");
+                    value = -value;
+                }
+
             } else if (value < 0) {
-                System.out.print(" - ");
+
+                System.out.print("-");
                 value = -value;
             }
 
-            if (i == 0) {
-                System.out.print(value);
-            } else if (i == 1) {
-                System.out.print(value + "x");
-            } else {
-                System.out.print(value + "x^" + i);
+            System.out.print(formatNumber(value));
+            if (i >= 1) {
+                System.out.print("x");}
+
+            if (i >= 2) {
+                System.out.print("^" + i);
             }
+
+            first = false;
+        }
+
+        if (first) {
+            System.out.print("0");
         }
 
         System.out.println();
@@ -166,21 +154,85 @@ public class PolynomialInterpolation {
     private static boolean hasDuplicateX(Matrix data) {
 
         int n = data.getRows();
-
         for (int i = 0; i < n; i++) {
-
             double xi = data.getValue(i, 0);
-
             for (int j = i + 1; j < n; j++) {
-
                 double xj = data.getValue(j, 0);
-
                 if (xi == xj) {
                     return true;
                 }
             }
         }
 
+
         return false;
     }
+
+
+
+    private static double evaluate(
+            double[] coefficients,
+            double x) {
+
+        double hasil = 0;
+        double power = 1;
+
+        for (int i = 0;
+            i < coefficients.length;
+            i++) {
+
+            hasil += coefficients[i] * power;
+
+            power *= x;
+        }
+
+        return hasil;
+    }
+
+
+    private static void printAugmented(Matrix matrix) {
+
+        int n = matrix.getRows();
+
+        for (int i = 0; i < matrix.getRows(); i++) {
+
+            for (int j = 0; j < matrix.getCols(); j++) {
+
+                if (j == n) {
+                    System.out.print("| ");
+                }
+
+                System.out.print(
+                    formatNumber(matrix.getValue(i, j))
+                );
+
+                if (j < matrix.getCols() - 1) {
+                    System.out.print(" ");
+                }
+            }
+
+            System.out.println();
+        }
+    }
+
+
+    private static String formatNumber(double value) {
+
+        java.text.DecimalFormatSymbols symbols =
+            new java.text.DecimalFormatSymbols(
+                java.util.Locale.US
+            );
+
+        java.text.DecimalFormat df =
+            new java.text.DecimalFormat(
+                "0.###",
+                symbols
+            );
+
+        if (value == 0) {
+            value = 0;
+        }
+        return df.format(value);
+    }
+
 }
