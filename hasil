@@ -1,0 +1,19 @@
+=== Interpolasi Polinom ===
+
+Data titik:
+(1, 2)
+(3, 4)
+
+Nilai x = 6
+
+Perhitungan interpolasi:
+x yang dicari = 6.0
+
+L0(x) = (x - 3.0) / (1.0 - 3.0)
+L1(x) = (x - 1.0) / (3.0 - 1.0)
+
+P(x) = 2.0L0(x) + 4.0L1(x)
+P(6.0) = 7.0
+
+Nilai interpolasi pada x = 6
+f(6) = 7

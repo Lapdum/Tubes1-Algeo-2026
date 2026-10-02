@@ -91,13 +91,13 @@ public class Inverse {
                     double factor = augmented.getValue(r, i);
 
                     if(factor != 0){
-                    Matrix.addRowbyRow(augmented, r, i, -factor);
+                        Matrix.addRowbyRow(augmented, r, i, -factor);
 
-                    System.out.println();
-                    System.out.println(
-                        "R"+(r+1)+" = R"+(r+1)+ " - (" + formatNumber(factor) + ")R" + (i+1));
-                        printAugmentedMatrix(augmented, n);
-                        
+                        System.out.println();
+                        System.out.println(
+                            "R"+(r+1)+" = R"+(r+1)+ " - (" + formatNumber(factor) + ")R" + (i+1));
+                            printAugmentedMatrix(augmented, n);
+                            
                     }
 
                 }
@@ -140,8 +140,8 @@ public class Inverse {
         cofactor.printMatrix();
 
         Matrix adjoint = new Matrix(n,n);
-
-        for(int i = 0; i<n; i++){
+        
+         for(int i = 0; i<n; i++){
             for (int j=0;j<n;j++) {
                 adjoint.set(i,j, cofactor.getValue(j,i));
             }
@@ -149,6 +149,38 @@ public class Inverse {
         System.out.println();
         System.out.println("Matriks Adjoint:");
         adjoint.printMatrix();
+
+        System.out.println();
+        System.out.println("Perhitungan Matriks Inverse:");
+        System.out.println("A^-1 = (1 / " + formatNumber(det) + ") * Adjoint");
+
+        System.out.println();
+        System.out.println("A^-1 = (1 / " + formatNumber(det) + ") *");
+
+        adjoint.printMatrix();
+
+        System.out.println();
+        System.out.println("Pembagian setiap elemen dengan determinan:");
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+
+                double value = adjoint.getValue(i, j);
+
+                System.out.print(
+                    formatNumber(value)
+                    + " / "
+                    + formatNumber(det)
+                );
+
+                if (j < n - 1) {
+                    System.out.print("    ");
+                }
+            }
+
+            System.out.println();
+        }
+       
 
         Matrix inverse = new Matrix(n,n);
 
@@ -158,9 +190,6 @@ public class Inverse {
             }
      
         }
-        System.out.println();
-        System.out.println("Matriks Inverse:");
-        inverse.printMatrix();
 
 
 
