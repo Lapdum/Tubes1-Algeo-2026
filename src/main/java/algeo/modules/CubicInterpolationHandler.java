@@ -8,7 +8,11 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class CubicInterpolationHandler {
-
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        run(sc);
+        sc.close();
+    }
     public static void run(Scanner sc) {
 
         System.out.println("=== Interpolasi Splina Kubik Natural ===");
@@ -49,15 +53,20 @@ public class CubicInterpolationHandler {
 
                 System.out.println();
                 System.out.println(
-                    "Masukkan pasangan x dan y untuk setiap titik."
+                    "Masukkan " + n + " pasang titik, satu titik per baris dengan format: x y"
                 );
-                System.out.println("Format: x y");
+                System.out.println("Pecahan boleh ditulis a/b, contoh: 1/2");
 
-                for (int i = 0; i < n; i++) {
+                int i = 0;
 
-                    System.out.print("Titik " + (i + 1) + ": ");
+                while (i < n) {
 
                     String line = sc.nextLine().trim();
+
+                    if (line.isEmpty()) {
+                        continue;
+                    }
+
                     line = line.replace(",", ".");
 
                     String[] tokens = line.split("\\s+");
@@ -71,14 +80,16 @@ public class CubicInterpolationHandler {
                     data.set(
                         i,
                         0,
-                        Double.parseDouble(tokens[0])
+                        parseNumber(tokens[0])
                     );
 
                     data.set(
                         i,
                         1,
-                        Double.parseDouble(tokens[1])
+                        parseNumber(tokens[1])
                     );
+
+                    i++;
                 }
 
             } else {
@@ -243,7 +254,7 @@ public class CubicInterpolationHandler {
                 );
 
                 try {
-                    xt = Double.parseDouble(
+                    xt = parseNumber(
                         sc.nextLine().trim().replace(",", ".")
                     );
 
@@ -258,9 +269,9 @@ public class CubicInterpolationHandler {
                         valid = true;
                     }
 
-                } catch (NumberFormatException e) {
+                } catch (IllegalArgumentException e) {
                     System.out.println(
-                        "Input harus berupa angka. Silakan masukkan ulang."
+                        "Input harus berupa angka atau pecahan a/b. Silakan masukkan ulang."
                     );
                 }
             }
@@ -323,6 +334,35 @@ public class CubicInterpolationHandler {
     }
 
 
+    // menerima angka biasa (2, -3.5) dan pecahan (1/2, -3/4)
+    private static double parseNumber(String token) {
+
+        if (token.contains("/")) {
+
+            String[] bagian = token.split("/");
+
+            if (bagian.length != 2) {
+                throw new NumberFormatException(
+                    "Format pecahan tidak valid: " + token
+                );
+            }
+
+            double pembilang = Double.parseDouble(bagian[0]);
+            double penyebut = Double.parseDouble(bagian[1]);
+
+            if (penyebut == 0) {
+                throw new IllegalArgumentException(
+                    "Penyebut pecahan tidak boleh nol: " + token
+                );
+            }
+
+            return pembilang / penyebut;
+        }
+
+        return Double.parseDouble(token);
+    }
+
+
     private static Matrix readDataFromFile(String filename)
             throws IOException {
 
@@ -365,10 +405,10 @@ public class CubicInterpolationHandler {
             }
 
             temp[rows][0] =
-                Double.parseDouble(tokens[0]);
+                parseNumber(tokens[0]);
 
             temp[rows][1] =
-                Double.parseDouble(tokens[1]);
+                parseNumber(tokens[1]);
 
             rows++;
         }

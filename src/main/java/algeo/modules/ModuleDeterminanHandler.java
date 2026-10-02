@@ -11,6 +11,11 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class ModuleDeterminanHandler {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        run(sc);
+        sc.close();
+    }
 
     public static void run(Scanner sc) {
 
@@ -58,14 +63,21 @@ public class ModuleDeterminanHandler {
 
                 System.out.println();
                 System.out.println(
-                    "Masukkan elemen setiap baris, dipisahkan spasi."
+                    "Masukkan matriks " + rows + "x" + cols
+                    + " (setiap baris berisi " + cols + " elemen, dipisahkan spasi)."
                 );
+                System.out.println("Pecahan boleh ditulis a/b, contoh: 1/2");
 
-                for (int i = 0; i < rows; i++) {
+                int i = 0;
 
-                    System.out.print("Baris " + (i + 1) + ": ");
+                while (i < rows) {
 
                     String line = sc.nextLine().trim();
+
+                    if (line.isEmpty()) {
+                        continue;
+                    }
+
                     line = line.replace(",", ".");
 
                     String[] tokens = line.split("\\s+");
@@ -81,9 +93,11 @@ public class ModuleDeterminanHandler {
                         data.set(
                             i,
                             j,
-                            Double.parseDouble(tokens[j])
+                            parseNumber(tokens[j])
                         );
                     }
+
+                    i++;
                 }
 
             } else {
@@ -430,6 +444,35 @@ public class ModuleDeterminanHandler {
     }
 
 
+    // menerima angka biasa (2, -3.5) dan pecahan (1/2, -3/4)
+    private static double parseNumber(String token) {
+
+        if (token.contains("/")) {
+
+            String[] bagian = token.split("/");
+
+            if (bagian.length != 2) {
+                throw new NumberFormatException(
+                    "Format pecahan tidak valid: " + token
+                );
+            }
+
+            double pembilang = Double.parseDouble(bagian[0]);
+            double penyebut = Double.parseDouble(bagian[1]);
+
+            if (penyebut == 0) {
+                throw new IllegalArgumentException(
+                    "Penyebut pecahan tidak boleh nol: " + token
+                );
+            }
+
+            return pembilang / penyebut;
+        }
+
+        return Double.parseDouble(token);
+    }
+
+
     private static Matrix readDataFromFile(String filename)
             throws IOException {
 
@@ -486,7 +529,7 @@ public class ModuleDeterminanHandler {
 
             for (int j = 0; j < cols; j++) {
                 temp[rows][j] =
-                    Double.parseDouble(tokens[j]);
+                    parseNumber(tokens[j]);
             }
 
             rows++;
