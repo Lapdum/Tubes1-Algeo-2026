@@ -109,7 +109,6 @@ public class Matrix {
         }
         //proses tukar pivot yg punya nilai terbesar, gerak diagonal ke bawah
         if(position != pivotRow){
-             System.out.println("R" + (pivotRow + 1) + " <-> R" + (position + 1));
             for(int j = 0; j<m.getCols(); j++){
                 double temp = m.getValue(pivotRow, j);
 
@@ -151,13 +150,5 @@ public class Matrix {
         }
 
         return m;
-    }
-    public void printMatrix(){
-        for (int i = 0; i<rows;i++){
-            for(int j = 0; j<cols; j++){
-                System.out.print(data[i][j]+ " ");
-            }
-            System.out.println();
-        }
     }
 }
