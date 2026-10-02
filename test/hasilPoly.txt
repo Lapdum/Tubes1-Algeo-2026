@@ -1,0 +1,9 @@
+=== Interpolasi Polinom ===
+
+Data titik:
+(1, 2)
+(2, 3)
+(3, 5)
+
+Nilai x = 3
+Hasil interpolasi = 5
