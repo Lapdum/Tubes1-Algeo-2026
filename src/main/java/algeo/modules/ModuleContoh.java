@@ -7,7 +7,8 @@ public class ModuleContoh {
         System.out.println("Tugas Besar 1 Aljabar Linier dan Geometri Tahun 2027/2027");
         Matrix test = new Matrix(3, 2);
         test.data = new double[][] {{0, 0}, {1, 1}, {2, 0}};
-        Matrix segmen = CubicInterpolationFunction.fillSegmen(test);
+        CubicInterpolationFunction f = new CubicInterpolationFunction();
+        Matrix segmen = f.fillSegmen(test);
         System.out.println(Arrays.deepToString(segmen.data));
     }
 }

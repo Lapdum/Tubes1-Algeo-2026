@@ -309,7 +309,7 @@ public class SPL {
         return false;
     }
 
-    private static Matrix eliminasiGauss(Matrix m) {
+    public static Matrix eliminasiGauss(Matrix m) {
         int r = m.getRows();
         int c = m.getCols();
         int nVar = c - 1;
