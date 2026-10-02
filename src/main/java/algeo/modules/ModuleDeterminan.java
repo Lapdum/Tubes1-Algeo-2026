@@ -99,4 +99,6 @@ public class ModuleDeterminan {
         }
         return Math.pow(-1, countSwitch) * valueDiagonal;
     }
+
+    //test
 }
