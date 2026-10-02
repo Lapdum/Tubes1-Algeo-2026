@@ -1,6 +1,5 @@
 package algeo.modules;
 
-import java.io.*;
 import java.util.*;
 
 public class SPL {
