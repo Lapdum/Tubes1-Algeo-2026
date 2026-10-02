@@ -1,31 +1,30 @@
 package algeo.modules;
 
-import java.util.Arrays;
-
 public class CubicInterpolationFunction {
-    public void main(String[] args) {
-        System.out.println("hai asd");
-        Matrix test = new Matrix(7, 2);
-        test.data = new double[][] {{0, 1}, {1, 1}, {3, 9}, {4, 9}, {6, 15}, {7, 30}, {9, 64}};
-        Matrix segmen = fillSegmen(test);
-        System.out.println("bwwwwaaao");
-        System.out.println(Arrays.deepToString(segmen.data));
-        System.out.println("baaao");
-    }
-
-
     public boolean isXandY(Matrix m) {
         return m.cols <= 2;
     }
 
-    public boolean isXcorrect(Matrix m) {
+    public boolean isXascending(Matrix m) {
         for (int p = 1; p < m.rows; p++) {
             if (m.data[p][0] > m.data[p-1][0]) {return false;}
         }
         return true;
     }
 
-    public Matrix fillSegmen(Matrix matrix) {
+    public boolean isXnotDouble(Matrix m) {
+        for (int p = 0; p < m.rows; p++) {
+            for (int q = 0; q < m.rows; q++) {
+                double cek = m.data[p][0];
+                if (cek == m.data[q][0]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static Matrix[] fillSegmen(Matrix matrix) {
 
         Matrix a = new Matrix(matrix.rows, 1); //7
         Matrix b = new Matrix(matrix.rows - 1, 1); //6
@@ -42,18 +41,7 @@ public class CubicInterpolationFunction {
         Matrix SPLc = new Matrix(matrix.rows, matrix.rows); //7x8
 
         Matrix segmenFunc = new Matrix(matrix.rows - 1, 4); //6x4
-        
-        //a.cols = matrix.rows - 1; a.rows = 1;
-        //b.cols = matrix.rows - 1; b.rows = 1;
-        //c.cols = matrix.rows - 1; c.rows = 1;
-        //d.cols = matrix.rows - 1; d.rows = 1;
-
-        //h.cols = matrix.rows - 1; h.rows = 1;
-
-        //rKanan.cols = 1; rKanan.rows = matrix.rows;
-
-        //koefc.cols = matrix.rows; koefc.rows = matrix.rows - 2;
-
+   
         for (int p = 0; p < matrix.rows; p++) {
             a.data[p][0] = matrix.data[p][1];
         }
@@ -106,16 +94,16 @@ public class CubicInterpolationFunction {
         // segmenFunc.cols = 4; segmenFunc.rows = matrix.rows - 1;
 
         for (int p = 0; p < segmenFunc.rows; p++) {
-            segmenFunc.data[p][0] = a.data[p][0] - (b.data[p][0]*matrix.data[p][0]) + (c.data[p][0]*Math.pow((matrix.data[p][0]),2)) - (d.data[p][0]*Math.pow(matrix.data[p][0], 3));
+            segmenFunc.data[p][0] = a.data[p][0] - (b.data[p][0]*matrix.data[p][0]) + (c.data[p][0]*Matrix.power((matrix.data[p][0]),2)) - (d.data[p][0]*Matrix.power(matrix.data[p][0], 3));
             segmenFunc.data[p][1] = b.data[p][0] - ( matrix.data[p][0] * ( (2*c.data[p][0]) - (2*d.data[p][0]*matrix.data[p][0]) - (d.data[p][0]*matrix.data[p][0])) );
             segmenFunc.data[p][2] = c.data[p][0] - (3*d.data[p][0]*matrix.data[p][0]);
             segmenFunc.data[p][3] = d.data[p][0];
         }
 
-        return segmenFunc;
+        return new Matrix[] {segmenFunc, a, b, c, d};
     }
 
-    public Matrix specialCombine(Matrix m1, Matrix m2) {
+    public static Matrix specialCombine(Matrix m1, Matrix m2) {
         Matrix m3 = new Matrix(m1.rows, m1.cols + 1);
         for (int i = 0; i < m1.rows; i++) {
             for (int j = 0; j < m1.cols; j++) {
@@ -128,7 +116,7 @@ public class CubicInterpolationFunction {
         return m3;
     }
 
-    public Matrix derivativeTwo(Matrix S) {
+    public static Matrix derivativeTwo(Matrix S) { // gajadi dipakai, sayang dihapus
         Matrix ddS = new Matrix(S.rows, S.cols - 2);
         for (int p = 0; p < S.rows; p++) {
             ddS.data[p][0] = S.data[p][2]*2;
@@ -136,5 +124,60 @@ public class CubicInterpolationFunction {
         }
         return ddS;
     }
-    
+
+    public static String plusOrmin(double angka) {
+        if (angka < 0) {return " - ";}
+        else {
+            return "+";
+        }
+    }
+
+    public static void printOutput(Matrix m, Matrix Msegmen, Matrix a, Matrix b, Matrix c, Matrix d) { // udah di cek dan benar
+        System.out.print("Metode Interpolasi: Interpolasi Splina Kubik Natural");
+        System.out.println();
+
+        System.out.println("Titik-titik sampel:");
+        System.out.println();
+        m.printMatrix();
+        System.out.println();
+
+        System.out.println("Domain interpolasi:");
+        System.out.println("[" + m.data[0][0] + ", " + m.data[m.rows - 1][0] + "]");
+        System.out.println();
+
+        System.out.println("Persamaan hasil interpolasi segmen");
+        System.out.println();
+
+        for (int p = 0; p < Msegmen.rows; p++) {
+            String g = "(x" + plusOrmin(0 - m.data[p][0]) + Matrix.absolute(m.data[p][0]) + ")";
+            
+            System.out.println("Segmen ke-" + p);
+            System.out.println("S" + (p) + "(x) = " + a.data[p][0] 
+            + plusOrmin(b.data[p][0]) + Matrix.absolute(b.data[p][0]) + g
+            + plusOrmin(b.data[p][0]) + Matrix.absolute(b.data[p][0]) + g + "^2"
+            + plusOrmin(b.data[p][0]) + Matrix.absolute(b.data[p][0]) + g + "^3");
+            System.out.println();
+            System.out.println("atau");
+            System.out.println();
+            System.out.println("S" + (p) + "(x) = " + Msegmen.data[p][0] 
+            + plusOrmin(Msegmen.data[p][1]) + Matrix.absolute(Msegmen.data[p][1]) + "x"
+            + plusOrmin(Msegmen.data[p][2]) + Matrix.absolute(Msegmen.data[p][2]) + "x^2"
+            + plusOrmin(Msegmen.data[p][3]) + Matrix.absolute(Msegmen.data[p][3]) + "x^3");
+            System.out.println(", dengan domain [" + m.data[p][0] + ", " + m.data[p+1][0] + "]");
+            System.out.println();
+        }
+
+        System.out.println("Nilai turunan kedua pada setiap knot");
+        System.out.println();
+        System.out.println("Pada knot, nilai turunan kedua menjadi:");
+        System.out.println();
+        System.out.println("S''(xi) = 2ci");
+        System.out.println();
+        
+        
+        for (int p = 0; p < m.rows; p++) {
+            System.out.println("Knot x" + p + " = " + 2*c.data[p][0]);
+            System.out.println();
+        }
+    }
 }
