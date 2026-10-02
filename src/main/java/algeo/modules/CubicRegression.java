@@ -6,8 +6,8 @@ import java.nio.charset.StandardCharsets;
 
 public class CubicRegression {
 
-    private static Scanner sc = new Scanner(System.in);
-    private static StringBuilder content = new StringBuilder();
+    public static Scanner sc = new Scanner(System.in);
+    public static StringBuilder content = new StringBuilder();
 
     public static void main(String[] args) {
         System.out.println("Pilih metode input matriks augmented:");
@@ -43,12 +43,12 @@ public class CubicRegression {
         }
     }
 
-    private static void note(String s) {
+    public static void note(String s) {
         System.out.println(s);
         content.append(s).append("\n");
     }
 
-    private static void manual() {
+    public static void manual() {
         System.out.println("---------------------------------");
         System.out.println("|       Regresi Splina Kubik    |");
         System.out.println("---------------------------------");
@@ -85,7 +85,7 @@ public class CubicRegression {
 
     }
 
-    private static void fileInput() {
+    public static void fileInput() {
         System.out.println("---------------------------------");
         System.out.println("|     Sistem Persamaan Linear    |");
         System.out.println("---------------------------------");
@@ -109,7 +109,7 @@ public class CubicRegression {
 
     }
 
-    private static void methodTitik(Matrix titikSampel, int jumlahKnot, Matrix posisiKnot) {
+    public static void methodTitik(Matrix titikSampel, int jumlahKnot, Matrix posisiKnot) {
         sc.nextLine();
         content.setLength(0);
         content.append("\n");
@@ -185,7 +185,7 @@ public class CubicRegression {
         outputRegression();
     }
 
-    private static String regresitoString(double[][] solution, int jumlahKnot, Matrix posisiKnot) {
+    public static String regresitoString(double[][] solution, int jumlahKnot, Matrix posisiKnot) {
         StringBuilder sb = new StringBuilder("y(x) = ");
         boolean first = true;
 
@@ -247,7 +247,7 @@ public class CubicRegression {
         return sb.toString();
     }
 
-    private static Matrix regressX(Matrix titikSampel, int jumlahKnot, Matrix posisiKnot) {
+    public static Matrix regressX(Matrix titikSampel, int jumlahKnot, Matrix posisiKnot) {
         int sizeColX = 4 + jumlahKnot;
         int sizeRowX = titikSampel.getRows();
         int rowY = titikSampel.getRows();
@@ -300,7 +300,7 @@ public class CubicRegression {
         return returnM;
     }
 
-    private static double regresiResult(double num, double[][] solution, int jumlahKnot, Matrix posisiKnot) {
+    public static double regresiResult(double num, double[][] solution, int jumlahKnot, Matrix posisiKnot) {
         double result = 0;
 
         for (int i = 0; i < jumlahKnot + 4; i++) {
@@ -385,7 +385,7 @@ public class CubicRegression {
         return m;
     }
 
-    private static void outputRegression() {
+    public static void outputRegression() {
         System.out.print("Nama file output (termasuk .txt):");
         String name = sc.nextLine().trim();
 
