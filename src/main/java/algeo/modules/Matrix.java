@@ -35,221 +35,142 @@ public class Matrix {
     }
 
     public static Matrix inputMatrix() {
-        double[][] m = new double[12][13];
-        int r = 0;
-        int c = 0;
-        boolean inputArray = true;
-        while (inputArray) {
-            String row = sc.nextLine();
-            if (row.length() == 0 || r == 11) {
-                inputArray = false;
-            } else {
-                row = row.replace(",", ".");
-
-                String[] token = row.split(" ");
-                for (int i = 0; i < token.length; i++) {
-                    if (token[i].contains("/")) {
-                        String[] numbers = token[i].split("/");
-                        double numerator = Double.parseDouble(numbers[0]);
-                        double denominator = Double.parseDouble(numbers[1]);
-                        double decimal = numerator / denominator;
-                        m[r][i] = decimal;
-                    } else {
-                        m[r][i] = Double.parseDouble(token[i]);
-                    }
-                }
-                r += 1;
-                if (c == 0) {
-                    c = token.length;
-                } else if (token.length != c) {
-                    System.out.println("Belum aku bikin try catchnya");
-                }
-            }
-        }
-
-        Matrix returnM = new Matrix(r, c);
-
-        for (int i = 0; i < r; i++) {
-            for (int j = 0; j < c; j++) {
-                returnM.data[i][j] = m[i][j];
-            }
-        }
-
-        return returnM;
+        return bacaManual(11, 12, 0);
     }
 
     public static Matrix inputFileMatrix() {
-        System.out.printf("Masukkan nama file (termasuk extension .txt): ");
-        String namaFile = sc.nextLine();
-
-        File fileMatrix = new File("../../../test/" + namaFile);
-        boolean validName = true;
-        while (validName) {
-            try (Scanner readFile = new Scanner(fileMatrix)) {
-                System.out.println("File ditemukan!");
-                validName = false;
-            } catch (FileNotFoundException e) {
-                System.out.println("File tidak ditemukan!");
-                sc.next();
-            }
-        }
-
-        double[][] m = new double[1001][1002];
-        int r = 0;
-        int c = 0;
-        try (Scanner readRow = new Scanner(fileMatrix, StandardCharsets.UTF_8.name())) {
-            while (readRow.hasNextLine()) {
-                String row = readRow.nextLine();
-                if (row.length() == 0 || r == 1001) {
-                    System.out.println("Kepanjangan bruh!");
-                } else {
-                    row = row.replace(",", ".");
-
-                    String[] token = row.split(" ");
-                    for (int i = 0; i < token.length; i++) {
-                        if (token[i].contains("/")) {
-                            String[] numbers = token[i].split("/");
-                            double numerator = Double.parseDouble(numbers[0]);
-                            double denominator = Double.parseDouble(numbers[1]);
-                            double decimal = numerator / denominator;
-                            m[r][i] = decimal;
-                        } else {
-                            m[r][i] = Double.parseDouble(token[i]);
-                        }
-                    }
-                    r += 1;
-                    if (c == 0) {
-                        c = token.length;
-                    } else if (token.length != c) {
-                        System.out.println("Belum aku bikin try catchnya");
-                    }
-                }
-            }
-
-            Matrix returnM = new Matrix(r, c);
-
-            for (int i = 0; i < r; i++) {
-                for (int j = 0; j < c; j++) {
-                    returnM.data[i][j] = m[i][j];
-                }
-            }
-
-            return returnM;
-        } catch (FileNotFoundException e) {
-            System.out.println("File tidak ditemukan!");
-            sc.next();
-        }
-
-        return null;
+        return bacaFile(1001, 1002, 0);
     }
 
     public static Matrix inputTitik() {
-        double[][] m = new double[10][2];
-        int r = 0;
-        int c = 0;
-        boolean inputArray = true;
-        while (inputArray) {
-            String row = sc.nextLine();
-            if (row.length() == 0 || r == 10) {
-                inputArray = false;
-            } else {
-                row = row.replace(",", ".");
-
-                String[] token = row.split(" ");
-                for (int i = 0; i < token.length; i++) {
-                    if (token[i].contains("/")) {
-                        String[] numbers = token[i].split("/");
-                        double numerator = Double.parseDouble(numbers[0]);
-                        double denominator = Double.parseDouble(numbers[1]);
-                        double decimal = numerator / denominator;
-                        m[r][i] = decimal;
-                    } else {
-                        m[r][i] = Double.parseDouble(token[i]);
-                    }
-                }
-                r += 1;
-                if (c == 0) {
-                    c = token.length;
-                } else if (token.length != c) {
-                    System.out.println("Belum aku bikin try catchnya");
-                }
-            }
-        }
-
-        Matrix returnM = new Matrix(r, c);
-
-        for (int i = 0; i < r; i++) {
-            for (int j = 0; j < c; j++) {
-                returnM.data[i][j] = m[i][j];
-            }
-        }
-
-        return returnM;
+        return bacaManual(10, 2, 2);
     }
 
     public static Matrix inputFileTitik() {
-        System.out.printf("Masukkan nama file (termasuk extension .txt): ");
-        String namaFile = sc.nextLine();
+        return bacaFile(10, 2, 2);
+    }
 
-        File fileMatrix = new File("../../../test/" + namaFile);
-        boolean validName = true;
-        while (validName) {
-            try (Scanner readFile = new Scanner(fileMatrix)) {
-                System.out.println("File ditemukan!");
-                validName = false;
-            } catch (FileNotFoundException e) {
-                System.out.println("File tidak ditemukan!");
-                sc.next();
+    private static Matrix bacaManual(int maxRows, int maxCols, int fixedCols) {
+        double[][] m = new double[maxRows][maxCols];
+        int r = 0;
+        int c = fixedCols;
+
+        while (r < maxRows) {
+            String row = sc.nextLine();
+            if (row.trim().isEmpty()) {
+                break;
+            }
+            try {
+                double[] nilai = parseBaris(row);
+                if (nilai.length > maxCols) {
+                    System.out.println("Jumlah kolom maksimal " + maxCols + ". Ulangi baris ini.");
+                    continue;
+                }
+                if (c != 0 && nilai.length != c) {
+                    System.out.println("Jumlah kolom harus " + c + ". Ulangi baris ini.");
+                    continue;
+                }
+                c = nilai.length;
+                for (int j = 0; j < c; j++) {
+                    m[r][j] = nilai[j];
+                }
+                r++;
+            } catch (NumberFormatException e) {
+                System.out.println("Input tidak valid: " + e.getMessage() + ". Ulangi baris ini.");
             }
         }
 
-        double[][] m = new double[10][2];
+        return doubletoMatrix(m, r, c);
+    }
+
+    private static Matrix bacaFile(int maxRows, int maxCols, int fixedCols) {
+        File f = mintaFile();
+        if (f == null) {
+            return null;
+        }
+
+        double[][] m = new double[maxRows][maxCols];
         int r = 0;
-        int c = 0;
-        try (Scanner readRow = new Scanner(fileMatrix, StandardCharsets.UTF_8.name())) {
-            while (readRow.hasNextLine()) {
-                String row = readRow.nextLine();
-                if (row.length() == 0 || r == 1001) {
-                    System.out.println("Kepanjangan bruh!");
-                } else {
-                    row = row.replace(",", ".");
+        int c = fixedCols;
+        int noBaris = 0;
 
-                    String[] token = row.split(" ");
-                    for (int i = 0; i < token.length; i++) {
-                        if (token[i].contains("/")) {
-                            String[] numbers = token[i].split("/");
-                            double numerator = Double.parseDouble(numbers[0]);
-                            double denominator = Double.parseDouble(numbers[1]);
-                            double decimal = numerator / denominator;
-                            m[r][i] = decimal;
-                        } else {
-                            m[r][i] = Double.parseDouble(token[i]);
-                        }
-                    }
-                    r += 1;
-                    if (c == 0) {
-                        c = token.length;
-                    } else if (token.length != c) {
-                        System.out.println("Belum aku bikin try catchnya");
-                    }
+        try (Scanner in = new Scanner(f, StandardCharsets.UTF_8.name())) {
+            while (in.hasNextLine()) {
+                String row = in.nextLine();
+                noBaris++;
+                if (row.trim().isEmpty()) {
+                    continue;
                 }
-            }
-
-            Matrix returnM = new Matrix(r, c);
-
-            for (int i = 0; i < r; i++) {
+                if (r == maxRows) {
+                    System.out.println("Jumlah baris melebihi batas " + maxRows + ".");
+                    return null;
+                }
+                double[] nilai = parseBaris(row);
+                if (nilai.length > maxCols || (c != 0 && nilai.length != c)) {
+                    System.out.println("Baris " + noBaris + ": jumlah kolom tidak sesuai.");
+                    return null;
+                }
+                c = nilai.length;
                 for (int j = 0; j < c; j++) {
-                    returnM.data[i][j] = m[i][j];
+                    m[r][j] = nilai[j];
                 }
+                r++;
             }
-
-            return returnM;
         } catch (FileNotFoundException e) {
             System.out.println("File tidak ditemukan!");
-            sc.next();
+            return null;
+        } catch (NumberFormatException e) {
+            System.out.println("Baris " + noBaris + ": " + e.getMessage() + ".");
+            return null;
         }
 
-        return null;
+        return doubletoMatrix(m, r, c);
+    }
+
+    private static File mintaFile() {
+        while (true) {
+            System.out.print("Masukkan nama file (termasuk extension .txt): ");
+            String nama = sc.nextLine().trim();
+            if (nama.isEmpty()) {
+                return null;
+            }
+            File f = new File("../../../test/" + nama);
+            if (f.isFile()) {
+                System.out.println("File ditemukan!");
+                return f;
+            }
+            System.out.println("File tidak ditemukan!");
+        }
+    }
+
+    public static double[] parseBaris(String row) {
+        String[] token = row.trim().replace(",", ".").split("\\s+");
+        double[] nilai = new double[token.length];
+
+        for (int i = 0; i < token.length; i++) {
+            if (token[i].contains("/")) {
+                String[] p = token[i].split("/");
+                if (p.length != 2) {
+                    throw new NumberFormatException("pecahan \"" + token[i] + "\" tidak valid");
+                }
+                double penyebut = parseAngka(p[1]);
+                if (penyebut == 0) {
+                    throw new NumberFormatException("penyebut nol pada \"" + token[i] + "\"");
+                }
+                nilai[i] = parseAngka(p[0]) / penyebut;
+            } else {
+                nilai[i] = parseAngka(token[i]);
+            }
+        }
+        return nilai;
+    }
+
+    public static double parseAngka(String s) {
+        try {
+            return Double.parseDouble(s);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("\"" + s + "\" bukan angka!");
+        }
     }
 
     public static Matrix doubletoMatrix(double[][] m, int r, int c) {
@@ -411,16 +332,19 @@ public class Matrix {
 
     // Print output
 
-    public static void printMatrix(Matrix m) {
-        int r = m.getRows();
-        int c = m.getCols();
-
-        for (int i = 0; i < r; i++) {
-            for (int j = 0; j < c; j++) {
-                System.out.printf(round3(m.getValue(i, j)) + " ");
+    public static String matrixToString(Matrix m) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < m.getRows(); i++) {
+            for (int j = 0; j < m.getCols(); j++) {
+                sb.append(round3(m.getValue(i, j))).append(" ");
             }
-            System.out.println();
+            sb.append("\n");
         }
+        return sb.toString();
+    }
+
+    public static void printMatrix(Matrix m) {
+        System.out.println(matrixToString(m));
     }
 
     public void printMatrix() {
