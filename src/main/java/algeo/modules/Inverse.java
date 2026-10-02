@@ -1,11 +1,48 @@
 package algeo.modules;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 public class Inverse {
+    private static void printAugmentedMatrix(Matrix matrix, int n) {
+        DecimalFormatSymbols symbols =
+            new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df =
+            new DecimalFormat("0.###", symbols);
+
+        for (int i = 0; i < matrix.getRows(); i++) {
+            for (int j = 0; j < matrix.getCols(); j++) {
+                if (j == n) {
+                    System.out.print("| ");
+                }
+                double value = matrix.getValue(i, j);
+                if (value == 0) {
+                    value = 0; }
+
+             System.out.printf("%8s ", df.format(value));
+            }
+
+            System.out.println();
+        }
+    }
+
+
+
+    private static String formatNumber(double value) {
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("0.###", symbols);
+
+        if (value == 0) {
+            value = 0;}
+        return df.format(value);
+    }
     public static Matrix inverseGaussJordan(Matrix matrix){
         if(matrix.getRows() != matrix.getCols()){
+            System.out.println();
             throw new IllegalArgumentException("Matriks harus persegi");
         }
-
         int n = matrix.getRows();
         Matrix augmented = new Matrix(n, 2*n); //jml kolom matrix semula ditambah kolom matrix identitas
        
@@ -20,21 +57,34 @@ public class Inverse {
                 }
             }
         }
-        System.out.println("Matrix augmented [A|I]:");
-        augmented.printMatrix();
+        System.out.println();
+        System.out.println("Matrix augmented [ A | I ]:");
+        printAugmentedMatrix(augmented, n);
 
         for(int i= 0; i<n; i++){
-            Matrix.partialPivoting(augmented,i,i);
+            int position = findPivotPosition(augmented,i,i);
+            Matrix.partialPivoting(augmented, i, i);
+            if(position != i){
+                System.out.println();
+                System.out.println(
+                    "R" + (i + 1) + " <-> R" + (position + 1)
+                );
 
-            augmented.printMatrix();
+                printAugmentedMatrix(augmented, n);
+            }
+
+            
+          
             //pivot
             double pivot = augmented.getValue(i, i);
             if(pivot == 0){
                 throw new IllegalArgumentException("Matriks tidak memiliki balikan");
             }
             Matrix.multiplyRow(augmented, i, 1.0/pivot); //sebaris dibagi 1/pivot
-            System.out.println( "R" + (i + 1) + " <- (1/" + pivot + ")R" + (i + 1));
-            augmented.printMatrix(); 
+            System.out.println();
+            System.out.println( "R" + (i + 1) + " <- (1/" + formatNumber(pivot) + ")R" + (i + 1));
+            printAugmentedMatrix(augmented, n);
+            
 
             for (int r = 0; r<n; r++){  //elim dibawah pivot
                 if(r != i){
@@ -43,9 +93,11 @@ public class Inverse {
                     if(factor != 0){
                     Matrix.addRowbyRow(augmented, r, i, -factor);
 
+                    System.out.println();
                     System.out.println(
-                        "R"+(r+1)+" = R"+(r+1)+ " - (" + factor + ")R" + (i+1));
-                        augmented.printMatrix();
+                        "R"+(r+1)+" = R"+(r+1)+ " - (" + formatNumber(factor) + ")R" + (i+1));
+                        printAugmentedMatrix(augmented, n);
+                        
                     }
 
                 }
@@ -62,6 +114,7 @@ public class Inverse {
 
     public static Matrix inverseAdjoint(Matrix matrix){
         if(matrix.getRows() != matrix.getCols()){
+            System.out.println();
             throw new IllegalArgumentException("Matrix harus persegi.");
         }
         int n = matrix.getRows();
@@ -70,6 +123,7 @@ public class Inverse {
         System.out.println("Determinan = " + det);
 
         if(det == 0){
+            System.out.println();
             throw new IllegalArgumentException("Matrix tidak memiliki balikan");
 
         }
@@ -81,6 +135,7 @@ public class Inverse {
                 cofactor.set(i,j,value);
             }
         }
+        System.out.println();
         System.out.println("Matriks Kofaktor:");
         cofactor.printMatrix();
 
@@ -88,9 +143,10 @@ public class Inverse {
 
         for(int i = 0; i<n; i++){
             for (int j=0;j<n;j++) {
-                adjoint.set(i,j, cofactor.getValue(i,j));
+                adjoint.set(i,j, cofactor.getValue(j,i));
             }
         }
+        System.out.println();
         System.out.println("Matriks Adjoint:");
         adjoint.printMatrix();
 
@@ -102,12 +158,45 @@ public class Inverse {
             }
      
         }
+        System.out.println();
         System.out.println("Matriks Inverse:");
         inverse.printMatrix();
 
 
-        
+
         return inverse;
+    }
+
+    private static int findPivotPosition(Matrix matrix, int pivotRow, int col) {
+
+        int position = pivotRow;
+        double max = matrix.getValue(pivotRow, col);
+
+        for (int i = pivotRow + 1; i < matrix.getRows(); i++) {
+
+            double value = matrix.getValue(i, col);
+
+            double absValue;
+            if (value < 0) {
+                absValue = -value;
+            } else {
+                absValue = value;
+            }
+
+            double absMax;
+            if (max < 0) {
+                absMax = -max;
+            } else {
+                absMax = max;
+            }
+
+            if (absValue > absMax) {
+                max = value;
+                position = i;
+            }
+        }
+
+        return position;
     }
     
 }

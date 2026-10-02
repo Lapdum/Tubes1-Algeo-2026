@@ -1,6 +1,10 @@
 package algeo.modules;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Scanner;
+import java.util.Locale;
+
 
 public class Matrix {
     int rows;
@@ -109,7 +113,8 @@ public class Matrix {
         }
         //proses tukar pivot yg punya nilai terbesar, gerak diagonal ke bawah
         if(position != pivotRow){
-             System.out.println("R" + (pivotRow + 1) + " <-> R" + (position + 1));
+
+            
             for(int j = 0; j<m.getCols(); j++){
                 double temp = m.getValue(pivotRow, j);
 
@@ -153,9 +158,20 @@ public class Matrix {
         return m;
     }
     public void printMatrix(){
-        for (int i = 0; i<rows;i++){
-            for(int j = 0; j<cols; j++){
-                System.out.print(data[i][j]+ " ");
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("0.###", symbols);
+
+        for (int i = 0; i<rows; i++) {
+            for(int j = 0; j< cols; j++) {
+                double value = data[i][j];
+
+                if(value == 0) {
+                    value = 0;
+                }
+                System.out.print(df.format(value));
+                if(j< cols-1) {
+                    System.out.print(" ");
+                }
             }
             System.out.println();
         }
