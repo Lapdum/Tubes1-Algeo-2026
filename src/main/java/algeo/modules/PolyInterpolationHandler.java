@@ -108,7 +108,7 @@ public class PolyInterpolationHandler {
         } catch (NumberFormatException e) {
 
             System.out.println(
-                "Format angka pada input tidak valid."
+                "Input tidak valid, gunakan format angka yang benar."
             );
             return;
 
@@ -133,69 +133,71 @@ public class PolyInterpolationHandler {
                 );
             }
 
-            System.out.println();
-            System.out.println("Data titik:");
-            data.printMatrix();
 
             System.out.println();
-            System.out.println(
-                "Perhitungan interpolasi:"
-            );
-            PolynomialInterpolation.printSteps(data, x);
+    // Menangkap seluruh output perhitungan
+    java.io.ByteArrayOutputStream output =
+        new java.io.ByteArrayOutputStream();
 
-            double hasil = PolynomialInterpolation.interpolatePoly(data, x);
+    java.io.PrintStream originalOut = System.out;
 
-            System.out.println();
-            System.out.println(
-                "Nilai interpolasi pada x = " + formatNumber(x)
-            );
+    double hasil;
 
-            System.out.println(
-                "f(" + formatNumber(x) + ") = "
-                + formatNumber(hasil)
-            );
+    try {
+        System.setOut(new java.io.PrintStream(output));
 
-            StringBuilder hasilOutput =
-                new StringBuilder();
+        System.out.println("=== Interpolasi Polinom ===");
+        System.out.println();
 
-            hasilOutput.append(
-                "=== Interpolasi Polinom ===\n\n"
-            );
+        System.out.println("Data titik:");
+        for (int i = 0; i < data.getRows(); i++) {
+            System.out.println( "(" + formatNumber(data.getValue(i, 0)) + ", " + formatNumber(data.getValue(i, 1)) + ")");
+        }
 
-            hasilOutput.append("Data titik:\n");
+        System.out.println();
 
-            for (int i = 0; i < data.getRows(); i++) {
+        System.out.println(
+            "Nilai x = " + formatNumber(x)
+        );
 
-                hasilOutput.append("(")
-                    .append(formatNumber(data.getValue(i, 0)))
-                    .append(", ")
-                    .append(formatNumber(data.getValue(i, 1)))
-                    .append(")\n");
-            }
-            hasilOutput.append("\n");
+        System.out.println();
+        System.out.println("Perhitungan interpolasi:");
 
-            hasilOutput.append(
-                "Nilai x = "
-            ).append(formatNumber(x)).append("\n");
-            hasilOutput.append(
-                "Hasil interpolasi = "
-            ).append(formatNumber(hasil)).append("\n");
 
-            System.out.println();
-            System.out.print(
-                "Masukkan nama/path file output: "
-            );
+       hasil = PolynomialInterpolation.printSteps(data, x);
 
-            String outputFilename = sc.nextLine();
+        System.out.println();
+        System.out.println(
+            "Nilai interpolasi pada x = " + formatNumber(x)
+        );
 
-            writeOutputToFile(
-                outputFilename,
-                hasilOutput.toString()
-            );
-            System.out.println(
-                "Hasil berhasil disimpan ke: "
-                + outputFilename
-            );
+        System.out.println(
+            "f(" + formatNumber(x) + ") = " + formatNumber(hasil)
+        );
+
+        } finally {
+            System.setOut(originalOut);
+        }
+
+        String hasilOutput = output.toString();
+    //output ke terminal
+        System.out.print(hasilOutput);
+        System.out.println();
+        System.out.print(
+            "Masukkan nama/path file output: "
+        );
+
+        String outputFilename = sc.nextLine();
+
+         writeOutputToFile(
+            outputFilename,
+            hasilOutput
+
+        );
+        System.out.println(
+            "Hasil berhasil disimpan ke: "
+            + outputFilename
+        );
 
         } catch (IllegalArgumentException e) {
 

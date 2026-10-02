@@ -120,10 +120,47 @@ public class InverseHandler {
                 System.setOut(originalOut);
             }
 
-            hasilOutput = output.toString();
+        StringBuilder header = new StringBuilder();
 
-            // Tampilkan langkah perhitungan ke terminal
-            System.out.print(hasilOutput);
+        header.append("=== Matriks Balikan ===\n");
+
+        if (pilihan == 1) {
+            header.append("Metode: Augmented [A | I] dengan Gauss-Jordan\n");
+        } else {
+            header.append("Metode: Adjoint\n");
+        }
+
+        header.append("\nInput Matriks:\n");
+
+        java.text.DecimalFormatSymbols symbols =
+            new java.text.DecimalFormatSymbols(java.util.Locale.US);
+
+        java.text.DecimalFormat df =
+            new java.text.DecimalFormat("0.###", symbols);
+
+        for (int i = 0; i < matrix.getRows(); i++) {
+            for (int j = 0; j < matrix.getCols(); j++) {
+                double value = matrix.getValue(i, j);
+
+                if (value == 0) {
+                    value = 0;
+                }
+
+                header.append(df.format(value));
+
+                if (j < matrix.getCols() - 1) {
+                    header.append(" ");
+                }
+            }
+
+            header.append("\n");
+        }
+
+        header.append("\n");
+
+        hasilOutput = header.toString() + output.toString();
+
+        System.out.print(hasilOutput);
 
             // Tambahkan hasil inverse
             hasilOutput += "\nMatriks Inverse:\n";
@@ -131,11 +168,7 @@ public class InverseHandler {
             System.out.println();
             System.out.println("Matriks Inverse:");
 
-            java.text.DecimalFormatSymbols symbols =
-                new java.text.DecimalFormatSymbols(java.util.Locale.US);
-
-            java.text.DecimalFormat df =
-                new java.text.DecimalFormat("0.###", symbols);
+        
 
             for (int i = 0; i < inverse.getRows(); i++) {
 
