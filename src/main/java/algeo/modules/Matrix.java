@@ -2,6 +2,7 @@ package algeo.modules;
 
 import java.util.*;
 import java.io.*;
+import java.text.*;
 import java.nio.charset.StandardCharsets;
 
 public class Matrix {
@@ -417,6 +418,25 @@ public class Matrix {
         for (int i = 0; i < r; i++) {
             for (int j = 0; j < c; j++) {
                 System.out.printf(round3(m.getValue(i, j)) + " ");
+            }
+        }
+    }
+
+    public void printMatrix() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("0.###", symbols);
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                double value = data[i][j];
+
+                if (value == 0) {
+                    value = 0;
+                }
+                System.out.print(df.format(value));
+                if (j < cols - 1) {
+                    System.out.print(" ");
+                }
             }
             System.out.println();
         }
