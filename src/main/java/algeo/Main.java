@@ -6,6 +6,8 @@ import algeo.modules.CubicInterpolationHandler;
 import algeo.modules.InverseHandler;
 import algeo.modules.ModuleDeterminanHandler;
 import algeo.modules.PolyInterpolationHandler;
+import algeo.modules.RegresiHandler;
+import algeo.modules.SPLHandler;
 
 public class Main {
     public static void main(String[] args) {
@@ -41,7 +43,7 @@ public class Main {
             switch (pilihan) {
 
                 case 1:
-                    System.out.println("Fitur SPL belum tersedia.");
+                    SPLHandler.run(sc);
                     break;
                 case 2:
                     ModuleDeterminanHandler.run(sc);
@@ -56,7 +58,7 @@ public class Main {
                     CubicInterpolationHandler.run(sc);
                     break;
                 case 6:
-                    System.out.println("Fitur Regresi Linier belum tersedia.");
+                    RegresiHandler.run(sc);
                     break;
                 case 0:
                     running = false;
