@@ -29,7 +29,7 @@ public class ModuleDeterminan {
     }
 
     public static double cofaktor(int i, int j, Matrix matrix) { // cofaktor (Cij)
-        return Math.pow(-1, i + j + 2) * minor(i, j, matrix);
+        return Matrix.power(-1, i + j + 2) * minor(i, j, matrix);
     }
 
     public static double minor(int i, int j, Matrix matrix) { // minor (Mij)
@@ -87,7 +87,7 @@ public class ModuleDeterminan {
         for (int i = 0; i < matrix.rows; i++) {
             valueDiagonal *= matrix.data[i][i];
         }
-        return Math.pow(-1, countSwitch) * valueDiagonal;
+        return Matrix.power(-1, countSwitch) * valueDiagonal;
     }
 
     // test
