@@ -82,8 +82,52 @@ public class ModuleDeterminan {
         }
     }
 
+    public static Double determinanReduksiBaris(Matrix matrix) {
+        int n = matrix.getRows();
+
+        if (n != matrix.getCols()) {
+            return null;
+        }
+
+        double[][] salinan = new double[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                salinan[i][j] = matrix.getValue(i, j);
+            }
+        }
+        Matrix m = Matrix.doubletoMatrix(salinan, n, n);
+
+        int countSwitch = 0;
+
+        for (int k = 0; k < n; k++) {
+
+            int bestPivot = Matrix.partialPivoting(m, k, k);
+
+            if (bestPivot == -1) {
+                return 0.0;
+            }
+
+            if (bestPivot != k) {
+                m = Matrix.switchRow(m, k, bestPivot);
+                countSwitch++;
+            }
+
+            double pivot = m.getValue(k, k);
+
+            for (int j = k + 1; j < n; j++) {
+                double multiplier = m.getValue(j, k) / pivot;
+
+                if (multiplier != 0) {
+                    m = Matrix.subtractRowbyRow(m, j, k, multiplier);
+                }
+            }
+        }
+
+        return reduksiBaris(m, countSwitch);
+    }
+
     public static double reduksiBaris(Matrix matrix, int countSwitch) {
-        double valueDiagonal = 0;
+        double valueDiagonal = 1;
         for (int i = 0; i < matrix.rows; i++) {
             valueDiagonal *= matrix.data[i][i];
         }

@@ -98,17 +98,18 @@ public class ModuleDeterminanHandler {
             System.out.println("Metode perhitungan determinan:");
             System.out.println("1. Ekspansi kofaktor baris");
             System.out.println("2. Ekspansi kofaktor kolom");
+            System.out.println("3. Reduksi baris");
             System.out.print("Pilih: ");
 
             metode = Integer.parseInt(sc.nextLine());
 
-            if (metode != 1 && metode != 2) {
+            if (metode < 1 || metode > 3) {
                 throw new IllegalArgumentException(
                     "Pilihan metode tidak valid."
                 );
             }
 
-            if (data.rows == data.cols && data.rows > 1) {
+            if (metode != 3 && data.rows == data.cols && data.rows > 1) {
 
                 if (metode == 1) {
                     System.out.print(
@@ -157,9 +158,12 @@ public class ModuleDeterminanHandler {
         if (metode == 1) {
             namaMetode = "Ekspansi kofaktor baris";
             label = "baris";
-        } else {
+        } else if (metode == 2) {
             namaMetode = "Ekspansi kofaktor kolom";
             label = "kolom";
+        } else {
+            namaMetode = "Reduksi baris";
+            label = "";
         }
 
         try {
@@ -212,7 +216,94 @@ public class ModuleDeterminanHandler {
                 System.out.println("Langkah-langkah perhitungan:");
                 System.out.println();
 
-                if (n == 1) {
+                if (metode == 3) {
+
+                    double[][] salinan = new double[n][n];
+                    for (int i = 0; i < n; i++) {
+                        for (int j = 0; j < n; j++) {
+                            salinan[i][j] = data.getValue(i, j);
+                        }
+                    }
+                    Matrix m = Matrix.doubletoMatrix(salinan, n, n);
+
+                    int countSwitch = 0;
+                    boolean adaPivotNol = false;
+
+                    System.out.println(
+                        "Reduksi baris hingga matriks berbentuk segitiga atas."
+                    );
+                    System.out.println(
+                        "Pertukaran baris membalik tanda determinan, "
+                        + "operasi Ri - k x Rj tidak mengubah determinan."
+                    );
+                    System.out.println();
+
+                    for (int kol = 0; kol < n; kol++) {
+
+                        int bestPivot = Matrix.partialPivoting(m, kol, kol);
+
+                        if (bestPivot == -1) {
+                            System.out.println(
+                                "Kolom " + (kol + 1)
+                                + " tidak memiliki pivot tidak nol, sehingga det(A) = 0."
+                            );
+                            adaPivotNol = true;
+                            break;
+                        }
+
+                        if (bestPivot != kol) {
+                            m = Matrix.switchRow(m, kol, bestPivot);
+                            countSwitch++;
+
+                            System.out.println(
+                                "Tukar baris " + (kol + 1)
+                                + " dengan baris " + (bestPivot + 1) + ":"
+                            );
+                            m.printMatrix();
+                            System.out.println();
+                        }
+
+                        double pivot = m.getValue(kol, kol);
+
+                        for (int j = kol + 1; j < n; j++) {
+                            double multiplier = m.getValue(j, kol) / pivot;
+
+                            if (multiplier != 0) {
+                                m = Matrix.subtractRowbyRow(m, j, kol, multiplier);
+
+                                System.out.println(
+                                    "R" + (j + 1) + " = R" + (j + 1) + " - ("
+                                    + formatNumber(multiplier) + ") x R" + (kol + 1) + ":"
+                                );
+                                m.printMatrix();
+                                System.out.println();
+                            }
+                        }
+                    }
+
+                    if (adaPivotNol) {
+                        det = 0;
+                    } else {
+                        String diagonal = "";
+                        for (int i = 0; i < n; i++) {
+                            if (i > 0) {
+                                diagonal = diagonal + " x ";
+                            }
+                            diagonal = diagonal + "(" + formatNumber(m.getValue(i, i)) + ")";
+                        }
+
+                        det = ModuleDeterminan.reduksiBaris(m, countSwitch);
+
+                        System.out.println(
+                            "Jumlah pertukaran baris: " + countSwitch
+                        );
+                        System.out.println(
+                            "det(A) = (-1)^" + countSwitch + " x " + diagonal
+                            + " = " + formatNumber(det)
+                        );
+                    }
+
+                } else if (n == 1) {
 
                     det = data.getValue(0, 0);
 

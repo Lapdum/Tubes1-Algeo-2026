@@ -113,7 +113,7 @@ public class CubicRegression {
         sc.nextLine();
         content.setLength(0);
         content.append("\n");
-        Matrix X = makeMatrixX(titikSampel, jumlahKnot, posisiKnot);
+        Matrix X = regressX(titikSampel, jumlahKnot, posisiKnot);
 
         X = eliminasiGaussTitik(X);
 
@@ -247,7 +247,7 @@ public class CubicRegression {
         return sb.toString();
     }
 
-    private static Matrix makeMatrixX(Matrix titikSampel, int jumlahKnot, Matrix posisiKnot) {
+    private static Matrix regressX(Matrix titikSampel, int jumlahKnot, Matrix posisiKnot) {
         int sizeColX = 4 + jumlahKnot;
         int sizeRowX = titikSampel.getRows();
         int rowY = titikSampel.getRows();
